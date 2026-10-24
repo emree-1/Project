@@ -1,0 +1,4877 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>ISP Assistant · Security assessment workspace</title>
+    <style>
+      /* 1. Presentation — all resources are embedded; no network access is used. */
+      :root {
+        --nav: #132b32;
+        --nav-muted: #9eb4b8;
+        --bg: #f4f6f6;
+        --paper: #fff;
+        --ink: #19343b;
+        --muted: #65787d;
+        --line: #dce5e5;
+        --teal: #12786e;
+        --light: #e8f4f0;
+        --critical: #ae293e;
+        --high: #b45e18;
+        --medium: #946b08;
+        --low: #226895;
+        --info: #64737e;
+        --shadow: 0 5px 20px #17353c06;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        font-size: 14px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        cursor: default;
+        opacity: 0.45;
+      }
+      button,
+      a,
+      input,
+      select,
+      textarea,
+      summary {
+        outline-offset: 4px;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid #4ca89c;
+      }
+      button {
+        color: inherit;
+      }
+      button.primary {
+        background: var(--teal);
+        color: white;
+        border-color: var(--teal);
+      }
+      button.primary:hover {
+        background: #0c625a;
+      }
+      button.danger {
+        color: var(--critical);
+      }
+      button,
+      .button {
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 7px;
+        padding: 9px 13px;
+        font-weight: 600;
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.25;
+      }
+      button:hover {
+        background: #f1f6f5;
+      }
+      button.quiet {
+        border-color: transparent;
+        background: transparent;
+      }
+      button.small {
+        font-size: 12px;
+        padding: 6px 9px;
+      }
+      svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        vertical-align: middle;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        font-size: 29px;
+        letter-spacing: -0.9px;
+        line-height: 1.2;
+        margin-bottom: 10px;
+      }
+      h2 {
+        font-size: 19px;
+        letter-spacing: -0.3px;
+      }
+      h3 {
+        font-size: 15px;
+      }
+      p {
+        line-height: 1.65;
+      }
+      small,
+      .muted {
+        color: var(--muted);
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 1.6px;
+        font-size: 10px;
+        font-weight: 750;
+        color: var(--teal);
+        margin-bottom: 12px;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 232px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: var(--nav);
+        color: white;
+        padding: 30px 18px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        letter-spacing: -0.4px;
+        font-weight: 750;
+        margin: 0 10px 34px;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 38px;
+        border-radius: 10px;
+        background: #1c514f;
+        color: #95dcc3;
+      }
+      .brand-mark svg {
+        width: 24px;
+        height: 24px;
+      }
+      .brand small {
+        font-size: 9px;
+        letter-spacing: 2px;
+        display: block;
+        font-weight: 500;
+        color: var(--nav-muted);
+        margin-top: 3px;
+      }
+      .nav-label {
+        font-size: 10px;
+        letter-spacing: 1.7px;
+        color: var(--nav-muted);
+        margin: 0 12px 10px;
+      }
+      .nav {
+        display: grid;
+        gap: 6px;
+      }
+      .nav button {
+        background: transparent;
+        border: 0;
+        justify-content: flex-start;
+        color: #b7c9cc;
+        padding: 12px;
+        border-radius: 7px;
+        text-align: left;
+        font-weight: 500;
+      }
+      .nav button.active {
+        background: #24434a;
+        color: white;
+        box-shadow: inset 3px 0 #6dc3a7;
+      }
+      .nav button:hover {
+        background: #203e45;
+      }
+      .nav button svg {
+        margin-right: 4px;
+      }
+      .nav .count {
+        margin-left: auto;
+        font-size: 11px;
+        background: #ffffff15;
+        color: #dcece8;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .sidebar-bottom {
+        margin-top: auto;
+        padding: 32px 10px 0;
+        color: #b7c9cc;
+        font-size: 12px;
+      }
+      .local-indicator {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 9px;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+        background: #75c2a4;
+      }
+      .sidebar-bottom p {
+        font-size: 11px;
+        color: #90a9ae;
+        margin: 0;
+      }
+      .workspace {
+        min-width: 0;
+      }
+      .topbar {
+        min-height: 82px;
+        background: #ffffffed;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 34px;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        backdrop-filter: blur(12px);
+      }
+      .project-caption {
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+      .project-title {
+        font-size: 14px;
+        font-weight: 700;
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .top-progress {
+        width: 130px;
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .progress-track {
+        height: 4px;
+        background: #e6eeed;
+        border-radius: 4px;
+        margin-top: 7px;
+        overflow: hidden;
+      }
+      .progress-track span {
+        display: block;
+        background: var(--teal);
+        height: 100%;
+        transition: width 0.2s;
+      }
+      .top-tools {
+        display: flex;
+        gap: 7px;
+      }
+      .top-tools button {
+        font-size: 12px;
+      }
+      .export-wrap {
+        position: relative;
+      }
+      .export-menu {
+        position: absolute;
+        right: 0;
+        top: 44px;
+        min-width: 205px;
+        background: white;
+        padding: 6px;
+        border: 1px solid var(--line);
+        box-shadow: 0 10px 30px #14363c20;
+        border-radius: 8px;
+      }
+      .export-menu button {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        border: 0;
+        padding: 11px;
+      }
+      .content {
+        max-width: 1460px;
+        margin: auto;
+        padding: 34px;
+      }
+      .page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 27px;
+      }
+      .page-heading p {
+        margin-bottom: 0;
+        color: var(--muted);
+        max-width: 700px;
+        font-size: 13px;
+      }
+      .heading-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        box-shadow: var(--shadow);
+      }
+      .panel-head {
+        padding: 22px 24px 18px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .panel-head h2 {
+        margin-bottom: 5px;
+      }
+      .panel-head p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .panel-body {
+        padding: 24px;
+      }
+      .qualification-layout {
+        display: grid;
+        grid-template-columns: 222px minmax(0, 1fr);
+        gap: 22px;
+        align-items: start;
+      }
+      .section-nav {
+        padding: 10px;
+        position: sticky;
+        top: 108px;
+      }
+      .section-nav button {
+        width: 100%;
+        border: 0;
+        text-align: left;
+        justify-content: flex-start;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 11px 10px;
+        background: transparent;
+        gap: 10px;
+        margin: 1px 0;
+      }
+      .section-nav button.active {
+        background: var(--light);
+        color: #086a60;
+        font-weight: 700;
+      }
+      .section-nav .section-number {
+        font-size: 10px;
+        min-width: 20px;
+        color: var(--muted);
+      }
+      .section-nav .check {
+        margin-left: auto;
+        color: var(--teal);
+        font-size: 12px;
+      }
+      .section-description {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 25px;
+      }
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+      }
+      .field {
+        display: block;
+        min-width: 0;
+      }
+      .field.wide {
+        grid-column: 1/-1;
+      }
+      .field-label {
+        font-size: 12px;
+        font-weight: 650;
+        display: block;
+        margin-bottom: 9px;
+      }
+      .field-help {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 6px;
+        display: block;
+        line-height: 1.5;
+      }
+      input:not([type="checkbox"]):not([type="radio"]),
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #cddbdc;
+        border-radius: 6px;
+        padding: 10px 11px;
+        background: white;
+        color: var(--ink);
+        min-width: 0;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: #93a0a3;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 86px;
+        line-height: 1.6;
+      }
+      input[type="checkbox"] {
+        accent-color: var(--teal);
+        width: 16px;
+        height: 16px;
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        background: #fff;
+      }
+      .chip:has(input:checked) {
+        border-color: #5ca89a;
+        background: var(--light);
+        color: #09675d;
+      }
+      .chip input {
+        margin: 0;
+      }
+      .segmented {
+        display: flex;
+        gap: 0;
+        width: max-content;
+        max-width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .segmented label {
+        position: relative;
+        cursor: pointer;
+        font-size: 11px;
+        display: block;
+      }
+      .segmented input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+      }
+      .segmented span {
+        display: block;
+        padding: 9px 12px;
+        border-right: 1px solid var(--line);
+        background: white;
+      }
+      .segmented label:last-child span {
+        border: 0;
+      }
+      .segmented input:checked + span {
+        background: var(--light);
+        color: #09675d;
+        font-weight: 700;
+      }
+      .segmented input:focus-visible + span {
+        outline: 3px solid var(--teal);
+        outline-offset: -3px;
+      }
+      .form-divider {
+        grid-column: 1/-1;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+        margin-top: 8px;
+        font-weight: 650;
+        font-size: 13px;
+      }
+      .callout {
+        padding: 14px 17px;
+        border-radius: 7px;
+        background: #eef5f5;
+        color: #47656a;
+        font-size: 12px;
+        line-height: 1.7;
+        display: flex;
+        gap: 10px;
+      }
+      .callout.warm {
+        background: #fbf5e9;
+        color: #8c662a;
+      }
+      .section-footer {
+        border-top: 1px solid var(--line);
+        padding: 17px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .section-footer small {
+        font-size: 11px;
+      }
+      .list-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        align-items: center;
+        margin: 28px 0 14px;
+      }
+      .list-header h3 {
+        margin: 0;
+      }
+      .entity-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 15px 17px;
+        margin: 9px 0;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+      .entity-icon {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        background: var(--light);
+        border-radius: 7px;
+        color: var(--teal);
+        flex-shrink: 0;
+      }
+      .entity-content {
+        flex: 1;
+        min-width: 0;
+      }
+      .entity-content strong {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 6px;
+        overflow-wrap: anywhere;
+      }
+      .entity-content small {
+        font-size: 11px;
+        line-height: 1.6;
+        display: block;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: 1.25fr repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .stat {
+        padding: 20px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+      .stat.total {
+        background: var(--nav);
+        color: white;
+        border-color: var(--nav);
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .stat.total .stat-label {
+        color: #bbced0;
+      }
+      .stat-value {
+        font-size: 31px;
+        font-weight: 650;
+        letter-spacing: -1px;
+        margin: 12px 0 3px;
+      }
+      .stat-sub {
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .stat.total .stat-sub {
+        color: #9ab5b8;
+      }
+      .badge {
+        font-size: 10px;
+        letter-spacing: 0.1px;
+        font-weight: 700;
+        padding: 4px 8px;
+        display: inline-flex;
+        gap: 5px;
+        align-items: center;
+        border-radius: 5px;
+        white-space: nowrap;
+      }
+      .sev-Critical {
+        background: #fbeaed;
+        color: var(--critical);
+      }
+      .sev-High {
+        background: #fff0e4;
+        color: var(--high);
+      }
+      .sev-Medium {
+        background: #fbf4d9;
+        color: var(--medium);
+      }
+      .sev-Low {
+        background: #eaf3fc;
+        color: var(--low);
+      }
+      .sev-Informational {
+        background: #edf1f4;
+        color: var(--info);
+      }
+      .neutral {
+        background: #eef3f3;
+        color: #61767b;
+      }
+      .good {
+        background: var(--light);
+        color: var(--teal);
+      }
+      .analysis-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 250px;
+        gap: 22px;
+        align-items: start;
+      }
+      .filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+      .filters input:not([type="checkbox"]) {
+        flex: 2;
+        min-width: 150px !important;
+      }
+      .filters select {
+        width: auto;
+        flex: 1;
+        min-width: 115px;
+      }
+      .filters label {
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+      .risk-list {
+        padding: 0 20px;
+      }
+      .risk-card {
+        padding: 21px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .risk-card:last-child {
+        border: 0;
+      }
+      .risk-card-top {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .risk-card h3 {
+        font-size: 14px;
+        line-height: 1.55;
+        margin: 8px 0 7px;
+      }
+      .risk-link {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        text-align: left;
+        display: inline;
+        font-weight: 650;
+        line-height: inherit;
+      }
+      .risk-link:hover {
+        background: transparent;
+        color: var(--teal);
+        text-decoration: underline;
+      }
+      .risk-card p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 13px;
+      }
+      .risk-meta {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .risk-id {
+        font-size: 10px;
+        letter-spacing: 0.6px;
+        color: var(--muted);
+      }
+      .risk-trigger {
+        font-size: 11px;
+        background: #f4f7f7;
+        padding: 9px 11px;
+        border-radius: 5px;
+        margin: 12px 0;
+        color: #547076;
+      }
+      .family-overview {
+        padding: 19px;
+      }
+      .family-overview h3 {
+        font-size: 13px;
+        margin-bottom: 7px;
+      }
+      .family-overview > p {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .family-button {
+        display: block;
+        width: 100%;
+        background: transparent;
+        border: 0;
+        padding: 10px 0;
+        border-radius: 0;
+        text-align: left;
+        font-weight: 500;
+      }
+      .family-button:hover,
+      .family-button.active {
+        background: #f2f7f5;
+      }
+      .family-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11px;
+      }
+      .family-bar {
+        height: 4px;
+        margin-top: 7px;
+        border-radius: 3px;
+        background: #eff2f1;
+        overflow: hidden;
+        display: flex;
+      }
+      .family-bar span {
+        height: 100%;
+      }
+      .empty {
+        padding: 45px 25px;
+        text-align: center;
+      }
+      .empty-icon {
+        display: grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        background: var(--light);
+        color: var(--teal);
+        border-radius: 14px;
+        margin: 0 auto 18px;
+      }
+      .empty-icon svg {
+        width: 26px;
+        height: 26px;
+      }
+      .empty h3 {
+        font-size: 17px;
+      }
+      .empty p {
+        color: var(--muted);
+        max-width: 420px;
+        margin: 0 auto 20px;
+        font-size: 13px;
+      }
+      .empty .actions {
+        justify-content: center;
+      }
+      .actions {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+      .list-count {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 13px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .action-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        padding: 20px;
+      }
+      .action-card {
+        padding: 19px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        min-width: 0;
+      }
+      .action-card h3 {
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 13px 0 8px;
+      }
+      .action-card p {
+        color: var(--muted);
+        font-size: 11px;
+        margin: 0 0 16px;
+      }
+      .action-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .action-fields .field-label {
+        font-size: 10px;
+        margin-bottom: 6px;
+      }
+      .action-fields input,
+      .action-fields select {
+        font-size: 11px;
+        padding: 8px !important;
+      }
+      .action-fields textarea {
+        font-size: 11px;
+        min-height: 55px;
+        padding: 8px;
+      }
+      .action-card footer {
+        margin-top: 12px;
+        font-size: 10px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .overdue {
+        color: var(--critical) !important;
+      }
+      .library-list {
+        padding: 0 22px;
+      }
+      .library-list details {
+        border-bottom: 1px solid var(--line);
+        padding: 18px 0;
+      }
+      .library-list details:last-child {
+        border: 0;
+      }
+      .library-list summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .library-list summary::-webkit-details-marker {
+        display: none;
+      }
+      .library-list summary strong {
+        font-size: 13px;
+        flex: 1;
+        line-height: 1.5;
+      }
+      .library-detail {
+        padding: 17px 0 0 30px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .library-detail ul {
+        padding-left: 18px;
+        line-height: 1.9;
+      }
+      .library-detail .condition {
+        font-family: ui-monospace, monospace;
+        font-size: 11px;
+        padding: 10px;
+        background: #f3f6f5;
+        line-height: 1.8;
+        white-space: normal;
+      }
+      .tags {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .tag {
+        font-size: 10px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 3px 6px;
+        color: var(--muted);
+      }
+      dialog {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0;
+        width: min(780px, calc(100% - 32px));
+        max-height: 90vh;
+        color: var(--ink);
+        box-shadow: 0 25px 100px #05232740;
+      }
+      dialog::backdrop {
+        background: #08242c90;
+        backdrop-filter: blur(3px);
+      }
+      .dialog-head {
+        padding: 22px 25px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      .dialog-head h2 {
+        line-height: 1.4;
+        margin: 7px 0 0;
+        font-size: 20px;
+      }
+      .dialog-head .close {
+        padding: 6px;
+        border: 0;
+        background: #f3f6f5;
+      }
+      .dialog-body {
+        padding: 24px;
+        overflow-wrap: anywhere;
+      }
+      .dialog-footer {
+        padding: 17px 24px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .dialog-body h3 {
+        margin-top: 25px;
+      }
+      .dialog-body h3:first-child {
+        margin-top: 0;
+      }
+      .reason-list {
+        padding: 15px 17px;
+        background: var(--light);
+        border-radius: 7px;
+        list-style: none;
+        font-size: 12px;
+        color: #28655e;
+        line-height: 1.9;
+      }
+      .reason-list li::before {
+        content: "✓";
+        margin-right: 8px;
+      }
+      .recommendation {
+        padding: 15px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .recommendation:last-child {
+        border: 0;
+      }
+      .recommendation > label {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 12px;
+        line-height: 1.6;
+        font-weight: 600;
+      }
+      .recommendation input[type="checkbox"] {
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+      .recommendation .action-fields {
+        margin: 12px 0 0 25px;
+        grid-template-columns: 1.2fr 1fr 1fr;
+      }
+      .recommendation .action-fields .wide {
+        grid-column: 1/-1;
+      }
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 13px 22px;
+        border-radius: 8px;
+        background: var(--nav);
+        color: white;
+        font-size: 12px;
+        z-index: 30;
+        box-shadow: 0 10px 30px #12333b30;
+        max-width: 90%;
+        line-height: 1.5;
+      }
+      .storage-warning {
+        padding: 12px 34px;
+        background: #fff0d6;
+        color: #785513;
+        font-size: 12px;
+        border-bottom: 1px solid #eddaa9;
+      }
+      .intro-banner {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+        border: 1px solid #c8dfd8;
+        background: #edf6f2;
+        border-radius: 9px;
+      }
+      .intro-banner p {
+        flex: 1;
+        font-size: 12px;
+        margin: 0;
+        color: #416d62;
+      }
+      .intro-banner strong {
+        display: block;
+        color: #23594f;
+        margin-bottom: 3px;
+      }
+      .intro-banner button {
+        flex-shrink: 0;
+      }
+      .step-pill {
+        background: var(--light);
+        color: var(--teal);
+        font-size: 11px;
+        padding: 6px 9px;
+        border-radius: 5px;
+        white-space: nowrap;
+      }
+      .library-summary {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 20px;
+      }
+      .hidden,
+      [hidden] {
+        display: none !important;
+      }
+      #print-root {
+        display: none;
+      }
+      label .optional {
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .mobile-brand {
+        display: none;
+      }
+      .flow-arrow {
+        color: var(--teal);
+        margin: 0 5px;
+      }
+      .required-note {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.7;
+        margin: 18px 0 0;
+      }
+      @media (min-width: 1600px) {
+        .content {
+          padding: 40px 46px;
+        }
+        .topbar {
+          padding-left: 46px;
+          padding-right: 46px;
+        }
+        .qualification-layout {
+          grid-template-columns: 240px minmax(0, 1fr);
+        }
+      }
+      @media (max-width: 1180px) {
+        .shell {
+          grid-template-columns: 194px minmax(0, 1fr);
+        }
+        .sidebar {
+          padding: 25px 12px;
+        }
+        .brand {
+          font-size: 16px;
+          margin-left: 6px;
+        }
+        .content {
+          padding: 26px;
+        }
+        .topbar {
+          padding: 15px 26px;
+          gap: 12px;
+        }
+        .top-progress {
+          display: none;
+        }
+        .top-tools {
+          margin-left: auto;
+        }
+        .analysis-layout {
+          grid-template-columns: minmax(0, 1fr) 212px;
+        }
+        .qualification-layout {
+          grid-template-columns: 185px minmax(0, 1fr);
+        }
+        .section-nav button {
+          font-size: 11px;
+        }
+        .stats {
+          gap: 8px;
+        }
+        .stat {
+          padding: 15px 12px;
+        }
+        .stat-value {
+          font-size: 27px;
+        }
+        .action-grid {
+          grid-template-columns: 1fr;
+        }
+        .top-tools button svg {
+          display: none;
+        }
+      }
+      @media (max-width: 850px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          height: auto;
+          position: relative;
+          padding: 15px 20px;
+          overflow: visible;
+        }
+        .brand {
+          margin: 0 0 15px;
+        }
+        .brand small {
+          display: none;
+        }
+        .nav {
+          display: flex;
+          gap: 5px;
+          flex-wrap: wrap;
+        }
+        .nav button {
+          font-size: 12px;
+          padding: 9px;
+        }
+        .nav-label,
+        .sidebar-bottom {
+          display: none;
+        }
+        .topbar {
+          position: relative;
+          padding: 14px 20px;
+          flex-wrap: wrap;
+        }
+        .content {
+          padding: 22px 18px;
+        }
+        .page-heading {
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+        .qualification-layout {
+          grid-template-columns: 1fr;
+        }
+        .section-nav {
+          position: static;
+          display: flex;
+          overflow: auto;
+          padding: 7px;
+        }
+        .section-nav button {
+          width: auto;
+          white-space: nowrap;
+          margin: 0;
+        }
+        .section-nav .check {
+          display: none;
+        }
+        .analysis-layout {
+          grid-template-columns: 1fr;
+        }
+        .family-overview {
+          order: -1;
+        }
+        .family-buttons {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 4px 15px;
+        }
+        .stats {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .top-tools {
+          gap: 5px;
+        }
+        .top-tools button {
+          padding: 8px;
+        }
+        .heading-actions {
+          flex-wrap: wrap;
+        }
+        .intro-banner {
+          flex-wrap: wrap;
+        }
+        .intro-banner p {
+          min-width: 200px;
+        }
+        h1 {
+          font-size: 25px;
+        }
+      }
+      @media (max-width: 520px) {
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+        .field.wide {
+          grid-column: auto;
+        }
+        .panel-body {
+          padding: 18px;
+        }
+        .panel-head {
+          padding: 18px;
+        }
+        .top-tools {
+          margin: 0;
+          flex-wrap: wrap;
+        }
+        .topbar {
+          gap: 12px;
+        }
+        .topbar > div:first-child {
+          width: 100%;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .family-buttons {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .action-fields,
+        .recommendation .action-fields {
+          grid-template-columns: 1fr;
+        }
+        .risk-card-top {
+          flex-wrap: wrap;
+        }
+        .nav button {
+          font-size: 11px;
+          gap: 5px;
+        }
+        .nav button svg {
+          width: 15px;
+        }
+        .heading-actions button {
+          font-size: 11px;
+        }
+        .section-footer {
+          gap: 8px;
+          padding: 15px;
+        }
+        .section-footer small {
+          display: none;
+        }
+        .dialog-body {
+          padding: 18px;
+        }
+        .dialog-head {
+          padding: 18px;
+        }
+        .intro-banner {
+          padding: 16px;
+        }
+        .action-grid {
+          padding: 12px;
+        }
+        .action-card {
+          padding: 15px;
+        }
+      }
+      @page {
+        size: A4;
+        margin: 16mm;
+      }
+      @media print {
+        body {
+          background: white;
+          font-size: 10pt;
+          color: #172e34;
+        }
+        .shell,
+        dialog,
+        .toast,
+        .storage-warning {
+          display: none !important;
+        }
+        #print-root {
+          display: block !important;
+        }
+        #print-root h1 {
+          font-size: 24pt;
+        }
+        #print-root h2 {
+          font-size: 15pt;
+          border-bottom: 1px solid #bbcaca;
+          padding-bottom: 7px;
+          margin-top: 25px;
+        }
+        #print-root h3 {
+          font-size: 11pt;
+          margin-bottom: 7px;
+        }
+        #print-root p,
+        #print-root li {
+          font-size: 9pt;
+          line-height: 1.6;
+        }
+        #print-root .report-risk {
+          break-inside: avoid;
+          border: 1px solid #d8e0e0;
+          border-radius: 6px;
+          padding: 13px;
+          margin: 12px 0;
+        }
+        #print-root .report-meta {
+          color: #52696e;
+          font-size: 9pt;
+        }
+        #print-root table {
+          border-collapse: collapse;
+          width: 100%;
+          font-size: 8pt;
+        }
+        #print-root th,
+        #print-root td {
+          border-bottom: 1px solid #ddd;
+          padding: 7px;
+          text-align: left;
+          vertical-align: top;
+          overflow-wrap: anywhere;
+        }
+        #print-root tr {
+          break-inside: avoid;
+        }
+        #print-root ul {
+          padding-left: 18px;
+        }
+        #print-root .badge {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+        #print-root .report-section {
+          break-before: page;
+        }
+        #print-root .report-note {
+          border-left: 3px solid #12786e;
+          padding-left: 10px;
+        }
+        #print-root pre {
+          white-space: pre-wrap;
+          font: inherit;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark" data-icon="shield"></span>
+          <div>ISP Assistant<small>SECURITY WORKSPACE</small></div>
+        </div>
+        <div class="nav-label">ASSESSMENT</div>
+        <nav class="nav" aria-label="Main navigation">
+          <button data-view="qualification">
+            <span data-icon="layers"></span>Project Qualification
+          </button>
+          <button data-view="risks">
+            <span data-icon="shield"></span>Risk Analysis<span
+              class="count"
+              id="nav-risk-count"
+              >0</span
+            >
+          </button>
+          <button data-view="actions">
+            <span data-icon="check"></span>Action Plan<span
+              class="count"
+              id="nav-action-count"
+              >0</span
+            >
+          </button>
+          <button data-view="library">
+            <span data-icon="book"></span>Risk Library
+          </button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="local-indicator">
+            <span class="dot"></span> Offline workspace
+          </div>
+          <p>
+            Assessment data stays in this browser. Export a JSON backup to keep
+            it safe.
+          </p>
+        </div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <div>
+            <div class="project-caption">Current assessment</div>
+            <div class="project-title" id="project-title">Untitled project</div>
+          </div>
+          <div class="top-progress">
+            <span id="progress-label">0% reviewed</span>
+            <div class="progress-track">
+              <span id="progress-fill" style="width: 0%"></span>
+            </div>
+          </div>
+          <div class="top-tools">
+            <button id="save-btn" title="Save assessment in this browser">
+              <span data-icon="save"></span>Save
+            </button>
+            <button id="load-btn" title="Import a project JSON file">
+              <span data-icon="folder"></span>Load
+            </button>
+            <div class="export-wrap">
+              <button
+                id="export-btn"
+                aria-expanded="false"
+                aria-controls="export-menu"
+              >
+                <span data-icon="download"></span>Export<span
+                  data-icon="chevron"
+                ></span>
+              </button>
+              <div class="export-menu" id="export-menu" hidden>
+                <button id="json-btn">Export Project · JSON</button
+                ><button id="report-btn">Export Report · Print / PDF</button>
+              </div>
+            </div>
+            <button
+              class="quiet danger"
+              id="reset-btn"
+              title="Start a new assessment"
+            >
+              Reset
+            </button>
+          </div>
+        </header>
+        <div
+          id="storage-warning"
+          class="storage-warning"
+          role="status"
+          hidden
+        ></div>
+        <main class="content" id="main"></main>
+      </div>
+    </div>
+    <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+    <input
+      type="file"
+      id="import-file"
+      accept=".json,application/json"
+      hidden
+    />
+    <div id="toast" class="toast" role="status" hidden></div>
+    <article id="print-root"></article>
+    <script>
+      "use strict";
+      /* 2. Shared vocabulary, questionnaire and catalogue data. */
+      const APP_VERSION = 1,
+        STORAGE_KEY = "isp-assistant.assessment.v1";
+      const SEVERITIES = ["Critical", "High", "Medium", "Low", "Informational"];
+      const RISK_STATUSES = [
+        "Applicable",
+        "Not Applicable",
+        "To Be Confirmed",
+        "Accepted",
+        "Mitigated",
+      ];
+      const ACTION_STATUSES = [
+        "To Assess",
+        "To Do",
+        "In Progress",
+        "Implemented",
+        "Not Retained",
+        "Risk Accepted",
+      ];
+      const COMPONENTS = [
+        "Web application",
+        "Desktop application",
+        "Mobile application",
+        "API",
+        "Server",
+        "Virtual machine",
+        "Container",
+        "Kubernetes",
+        "Database",
+        "File storage",
+        "SaaS service",
+        "Cloud IaaS / PaaS",
+        "Active Directory",
+        "Entra ID / identity provider",
+        "Reverse proxy",
+        "Load balancer",
+        "Firewall",
+        "Network device",
+        "Backup solution",
+        "Monitoring solution",
+        "Other",
+      ];
+      const USER_TYPES = [
+        "Internal users",
+        "Administrators",
+        "Contractors",
+        "Partners",
+        "Customers",
+        "External users",
+        "Technical accounts",
+        "Service accounts",
+        "Application accounts",
+        "Machine-to-Machine identities",
+      ];
+      const bool = (key, label, show) => ({ key, label, type: "bool", show });
+      const text = (key, label, placeholder = "", show) => ({
+        key,
+        label,
+        type: "text",
+        placeholder,
+        show,
+      });
+      const select = (key, label, options, show) => ({
+        key,
+        label,
+        type: "select",
+        options,
+        show,
+      });
+      const multi = (key, label, options, show) => ({
+        key,
+        label,
+        type: "multi",
+        options,
+        show,
+        wide: true,
+      });
+      const yes = (key) => (s) => s.answers[key] === "yes";
+      const either =
+        (...keys) =>
+        (s) =>
+          keys.some((k) => s.answers[k] === "yes");
+      const hasComponent =
+        (...values) =>
+        (s) =>
+          values.some((v) => s.answers.components?.includes(v));
+      const machineContext = (s) =>
+        s.answers.serviceAccounts === "yes" ||
+        s.answers.m2m === "yes" ||
+        s.answers.userTypes?.some((v) =>
+          [
+            "Service accounts",
+            "Technical accounts",
+            "Application accounts",
+            "Machine-to-Machine identities",
+          ].includes(v),
+        );
+      const secretContext = (s) =>
+        machineContext(s) ||
+        s.answers.secrets === "yes" ||
+        [
+          "applicationPasswords",
+          "apiKeys",
+          "tokens",
+          "certificates",
+          "privateKeys",
+          "serviceCredentials",
+        ].some((k) => s.answers[k] === "yes");
+      const aiContext = yes("ai");
+      const sections = [
+        {
+          id: "general",
+          title: "General information",
+          description:
+            "Define the project and its business context. You can return to any section as the assessment evolves.",
+          fields: [
+            text("name", "Project name", "e.g. People Hub — HR platform"),
+            {
+              key: "description",
+              label: "Project description",
+              type: "textarea",
+              wide: true,
+              placeholder: "What does the solution do, and how does it work?",
+            },
+            {
+              key: "objective",
+              label: "Business objective",
+              type: "textarea",
+              wide: true,
+              placeholder:
+                "Business outcome, intended users and key dependencies",
+            },
+            text("owner", "Project owner / team", "Name or team"),
+            select("environment", "Environment", [
+              "On-premises",
+              "Cloud",
+              "SaaS",
+              "Hybrid",
+            ]),
+            select("projectType", "Project type", [
+              "New project",
+              "Evolution of an existing system",
+            ]),
+            select("criticality", "Business criticality", [
+              "Low",
+              "Medium",
+              "High",
+              "Critical",
+            ]),
+          ],
+        },
+        {
+          id: "architecture",
+          title: "Architecture & components",
+          description:
+            "Select the building blocks in scope. Components activate relevant security review areas.",
+          fields: [
+            multi("components", "Project components", COMPONENTS),
+            text(
+              "architectureNotes",
+              "Architecture notes",
+              "Trust boundaries, integrations and deployment model",
+            ),
+          ],
+        },
+        {
+          id: "network",
+          title: "Network flows",
+          description:
+            "Map communications and trust boundaries. Add specific flows to capture authentication and encryption evidence.",
+          fields: [
+            bool("network", "Network communications"),
+            bool("internalComms", "Internal communications", yes("network")),
+            bool("internetComms", "Internet communications", yes("network")),
+            bool("inbound", "Inbound Internet flows", yes("network")),
+            bool("outbound", "Outbound Internet flows", yes("network")),
+            bool("partnerComms", "Partner communications", yes("network")),
+            bool("saasComms", "SaaS communications", yes("network")),
+            bool(
+              "appComms",
+              "Application-to-application communications",
+              yes("network"),
+            ),
+            bool("apiFlows", "API communications", yes("network")),
+            bool("m2m", "Machine-to-Machine communications", yes("network")),
+            text(
+              "protocols",
+              "Protocols used",
+              "HTTPS, SFTP, AMQP…",
+              yes("network"),
+            ),
+            bool("publicExposure", "Public exposure", yes("network")),
+            bool("dmz", "DMZ / isolated ingress zone", yes("network")),
+            bool("crossZone", "Cross-zone flows", yes("network")),
+            bool("segmentation", "Network segmentation", yes("network")),
+            bool(
+              "restrictFlows",
+              "Flows limited to necessary sources and ports",
+              yes("network"),
+            ),
+            bool("egressControl", "Outbound traffic filtering", yes("network")),
+          ],
+        },
+        {
+          id: "data",
+          title: "Data & classification",
+          description:
+            "Describe data sensitivity, hosting and lifecycle. An unanswered control stays unknown; it is never treated as a confirmed absence.",
+          fields: [
+            bool("data", "Processes or stores data"),
+            multi(
+              "dataClasses",
+              "Data classification",
+              [
+                "Personal",
+                "Sensitive",
+                "Financial",
+                "Secrets",
+                "Credentials",
+                "Business-critical",
+                "Regulated",
+                "Public",
+              ],
+              yes("data"),
+            ),
+            bool(
+              "externalHosting",
+              "Hosted outside the organization",
+              yes("data"),
+            ),
+            bool("outsideEU", "Hosted outside the EU", yes("data")),
+            bool("encryptedRest", "Encrypted at rest", yes("data")),
+            bool("encryptedTransit", "Encrypted in transit", yes("data")),
+            bool("backupRequired", "Backup required", yes("data")),
+            bool("retentionRequired", "Retention requirements", yes("data")),
+            bool(
+              "deletionRequired",
+              "Automatic deletion required",
+              yes("data"),
+            ),
+            bool(
+              "deletion",
+              "Automatic deletion implemented",
+              (s) =>
+                s.answers.data === "yes" &&
+                s.answers.deletionRequired === "yes",
+            ),
+            text(
+              "dataLocation",
+              "Hosting location",
+              "Region / country / platform",
+              yes("data"),
+            ),
+            text(
+              "dataVolume",
+              "Estimated volume",
+              "e.g. 50,000 employee records",
+              yes("data"),
+            ),
+            text(
+              "retention",
+              "Retention duration",
+              "e.g. 5 years after employment",
+              yes("data"),
+            ),
+            select(
+              "confidentiality",
+              "Confidentiality criticality",
+              ["Low", "Medium", "High", "Critical"],
+              yes("data"),
+            ),
+            select(
+              "integrity",
+              "Integrity criticality",
+              ["Low", "Medium", "High", "Critical"],
+              yes("data"),
+            ),
+            select(
+              "availability",
+              "Availability criticality",
+              ["Low", "Medium", "High", "Critical"],
+              yes("data"),
+            ),
+            select(
+              "traceability",
+              "Traceability criticality",
+              ["Low", "Medium", "High", "Critical"],
+              yes("data"),
+            ),
+          ],
+        },
+        {
+          id: "identity",
+          title: "Users & identities",
+          description:
+            "Identify human and machine identities, then qualify the controls that protect their access.",
+          fields: [
+            multi("userTypes", "User and identity populations", USER_TYPES),
+            select("auth", "Authentication method", [
+              "Entra ID / federated SSO",
+              "Password",
+              "Certificate / mTLS",
+              "API Key",
+              "OAuth 2.0 / OIDC",
+              "None",
+              "Other",
+            ]),
+            bool("mfa", "Multi-factor authentication"),
+            bool("sso", "Single sign-on"),
+            bool("federation", "Identity federation"),
+            bool("localAccounts", "Local accounts"),
+            bool("sharedAccounts", "Shared accounts"),
+            bool("privileged", "Privileged accounts"),
+            bool("leastPrivilege", "Least-privilege access enforced"),
+            bool("lifecycle", "Automated joiner / mover / leaver lifecycle"),
+            bool("serviceAccounts", "Service / technical accounts"),
+            text(
+              "serviceCount",
+              "Number of machine accounts",
+              "e.g. 3",
+              machineContext,
+            ),
+            text(
+              "serviceUse",
+              "Machine identity use cases",
+              "Integrations, batch jobs…",
+              machineContext,
+            ),
+            bool("staticSecrets", "Static machine credentials", machineContext),
+            bool(
+              "sharedService",
+              "Machine account shared across applications",
+              machineContext,
+            ),
+            bool(
+              "machineLeastPrivilege",
+              "Machine identities use least privilege",
+              machineContext,
+            ),
+            bool(
+              "machineLogging",
+              "Machine identity activity is attributable and logged",
+              machineContext,
+            ),
+            bool("apiKeys", "API keys"),
+            bool("certificates", "Certificates"),
+            bool(
+              "sessionControls",
+              "Secure session expiry and cookie controls",
+              hasComponent("Web application"),
+            ),
+            bool(
+              "appAuthorization",
+              "Server-side authorization verified",
+              hasComponent("Web application", "API", "Mobile application"),
+            ),
+            bool("rateLimit", "API rate limiting", hasComponent("API")),
+          ],
+        },
+        {
+          id: "thirdParties",
+          title: "Third-party services",
+          description:
+            "Identify suppliers and the access, data and operational dependencies they introduce.",
+          fields: [
+            bool("thirdParty", "Third-party services"),
+            multi(
+              "thirdPartyTypes",
+              "Third-party service types",
+              [
+                "SaaS",
+                "External hosting",
+                "Managed service provider",
+                "Contractor",
+                "External API",
+                "Cloud provider",
+              ],
+              yes("thirdParty"),
+            ),
+            bool(
+              "supplierData",
+              "Third party can access data",
+              yes("thirdParty"),
+            ),
+            bool(
+              "supplierAdmin",
+              "Administration by third party",
+              yes("thirdParty"),
+            ),
+            bool(
+              "supplierReview",
+              "Security and contractual review completed",
+              yes("thirdParty"),
+            ),
+            bool(
+              "exitPlan",
+              "Reversibility / supplier exit plan",
+              yes("thirdParty"),
+            ),
+          ],
+        },
+        {
+          id: "exposure",
+          title: "Exposure & remote access",
+          description:
+            "Qualify external entry points and the devices and access paths used to reach them.",
+          fields: [
+            bool("webExposure", "Web application exposed to the Internet"),
+            bool("apiExposure", "API exposed to the Internet"),
+            bool("vpn", "VPN access"),
+            bool("ztna", "Zero-trust network access"),
+            bool("remoteAdmin", "Remote administrator access"),
+            bool("contractorAccess", "Contractor access"),
+            bool(
+              "timeBoundAccess",
+              "Contractor access is time-bound",
+              yes("contractorAccess"),
+            ),
+            bool("unmanaged", "Access from unmanaged endpoints"),
+            bool("byod", "Bring-your-own-device access"),
+            bool("internetInternal", "Internet-to-internal-system access"),
+            bool("reverseProxy", "Publication through reverse proxy"),
+            bool(
+              "waf",
+              "Web application firewall",
+              either("webExposure", "apiExposure"),
+            ),
+            bool("bastion", "Bastion host"),
+            bool("edr", "Endpoint detection and response"),
+            bool("adminWorkstation", "Dedicated administration workstation"),
+          ],
+        },
+        {
+          id: "administration",
+          title: "Administration & PAM",
+          description:
+            "Assess privileged access and how administrative activity is controlled and recorded.",
+          fields: [
+            text(
+              "administrators",
+              "Who administers the solution?",
+              "Internal operations, supplier, project team…",
+            ),
+            bool("dedicatedAdmin", "Dedicated administrator accounts"),
+            bool("adminMfa", "MFA for administrator access"),
+            bool("pam", "Privileged access management"),
+            bool("sharedAdmin", "Shared administrator accounts"),
+            bool("directAdmin", "Direct SSH / RDP access"),
+            bool("adminLogs", "Administrative action logging"),
+            bool("breakGlass", "Controlled break-glass accounts"),
+            bool("jit", "Just-in-time privileged access"),
+          ],
+        },
+        {
+          id: "secrets",
+          title: "Secrets & credentials",
+          description:
+            "Describe credential material and its lifecycle. Record the storage method, never actual secret values.",
+          fields: [
+            bool("secrets", "Application uses secrets / credentials"),
+            bool(
+              "applicationPasswords",
+              "Application passwords",
+              secretContext,
+            ),
+            bool("tokens", "Tokens", secretContext),
+            bool("privateKeys", "Private keys", secretContext),
+            bool(
+              "serviceCredentials",
+              "Service account credentials",
+              secretContext,
+            ),
+            bool(
+              "sourceSecrets",
+              "Secrets stored in source code",
+              secretContext,
+            ),
+            bool(
+              "configSecrets",
+              "Secrets stored in configuration files",
+              secretContext,
+            ),
+            bool("vault", "Secrets vault", secretContext),
+            bool("rotation", "Automatic credential rotation", secretContext),
+            bool("shortLived", "Short-lived credentials", secretContext),
+            select(
+              "secretStorage",
+              "Machine credential storage",
+              [
+                "Secrets vault",
+                "Configuration file",
+                "Source code",
+                "Environment injection",
+                "Other",
+              ],
+              machineContext,
+            ),
+          ],
+        },
+        {
+          id: "resilience",
+          title: "Backup & resilience",
+          description:
+            "Capture recovery objectives and the mechanisms that protect continuity of service.",
+          fields: [
+            bool("backups", "Backups"),
+            bool("dr", "Disaster recovery / business continuity plan"),
+            bool("redundancy", "Redundancy"),
+            bool("ha", "High availability"),
+            bool(
+              "criticalDependencies",
+              "Critical external / single dependencies",
+            ),
+            text(
+              "dependencies",
+              "Critical dependency details",
+              "Identity, network, supplier, database…",
+            ),
+            text("rpo", "Recovery point objective (RPO)", "e.g. 4 hours"),
+            text("rto", "Recovery time objective (RTO)", "e.g. 8 hours"),
+            bool(
+              "recoveryAligned",
+              "RPO / RTO validated against business needs",
+            ),
+            bool("immutable", "Immutable backups", yes("backups")),
+            bool(
+              "backupIsolated",
+              "Backups isolated from production credentials",
+              yes("backups"),
+            ),
+            bool("restoreTest", "Restore testing", yes("backups")),
+            bool("degraded", "Documented degraded operating mode"),
+          ],
+        },
+        {
+          id: "logging",
+          title: "Logging & monitoring",
+          description:
+            "Determine whether security events can be attributed, investigated and detected in time.",
+          fields: [
+            bool("appLogs", "Application logs"),
+            bool("authLogs", "Authentication logs"),
+            bool("securityLogs", "Security logs"),
+            bool("centralLogs", "Centralized logging"),
+            bool("siem", "SIEM integration"),
+            bool("alerts", "Security alerting"),
+            text(
+              "logRetention",
+              "Log retention duration",
+              "e.g. 90 days searchable, 1 year archived",
+            ),
+            bool(
+              "retentionAdequate",
+              "Log retention meets investigation requirements",
+            ),
+            bool("timeSync", "Synchronized time source"),
+            bool(
+              "vulnManagement",
+              "Vulnerability scanning and remediation process",
+            ),
+          ],
+        },
+        {
+          id: "ai",
+          title: "Artificial intelligence",
+          description:
+            "Identify AI data flows, supplier reuse and the authority granted to AI agents.",
+          fields: [
+            bool("ai", "Use of an AI model"),
+            bool("aiSaas", "SaaS AI service", aiContext),
+            bool("aiLocal", "Locally hosted model", aiContext),
+            bool("aiData", "Project data sent to the model", aiContext),
+            bool("aiPersonal", "Personal data sent to the model", aiContext),
+            bool(
+              "aiConfidential",
+              "Confidential data sent to the model",
+              aiContext,
+            ),
+            bool(
+              "aiTraining",
+              "Supplier uses customer data for training",
+              aiContext,
+            ),
+            bool("aiAgents", "AI agents", aiContext),
+            bool("aiTools", "AI access to internal tools or data", aiContext),
+            bool(
+              "aiLeastPrivilege",
+              "AI tool permissions restricted",
+              aiContext,
+            ),
+            bool(
+              "aiHumanReview",
+              "Human approval for consequential AI actions",
+              aiContext,
+            ),
+            bool(
+              "aiInjection",
+              "Prompt injection and tool-input protections",
+              aiContext,
+            ),
+            text(
+              "aiUse",
+              "AI use cases and data boundaries",
+              "Model, data sources, permitted actions…",
+              aiContext,
+            ),
+          ],
+        },
+      ];
+      const fieldIndex = Object.fromEntries(
+        sections.flatMap((s) => s.fields.map((f) => [f.key, f])),
+      );
+      // Declarative conditions: all / any trees of explicit facts. Unknown never equals "no".
+      const eq = (key, value) => ({ key, op: "eq", value });
+      const contains = (key, value) => ({ key, op: "includes", value });
+      const all = (...conditions) => ({ all: conditions });
+      const any = (...conditions) => ({ any: conditions });
+      const Y = (key) => eq(key, "yes"),
+        N = (key) => eq(key, "no");
+      const machine = any(
+        Y("serviceAccounts"),
+        Y("m2m"),
+        contains("userTypes", "Service accounts"),
+        contains("userTypes", "Technical accounts"),
+        contains("userTypes", "Application accounts"),
+        contains("userTypes", "Machine-to-Machine identities"),
+      );
+      const sensitive = all(
+        Y("data"),
+        any(
+          ...[
+            "Sensitive",
+            "Personal",
+            "Financial",
+            "Secrets",
+            "Credentials",
+            "Regulated",
+          ].map((v) => contains("dataClasses", v)),
+        ),
+      );
+      const criticalBusiness = any(
+        eq("criticality", "High"),
+        eq("criticality", "Critical"),
+      );
+      const exposed = any(
+        Y("webExposure"),
+        Y("apiExposure"),
+        Y("publicExposure"),
+        Y("inbound"),
+      );
+      const third = any(
+        Y("thirdParty"),
+        { collection: "thirdParties" },
+        Y("supplierAdmin"),
+      );
+      const cloud = any(
+        eq("environment", "Cloud"),
+        eq("environment", "Hybrid"),
+        eq("environment", "SaaS"),
+        contains("components", "SaaS service"),
+        contains("components", "Cloud IaaS / PaaS"),
+      );
+      const secretUse = any(
+        Y("secrets"),
+        machine,
+        Y("apiKeys"),
+        Y("tokens"),
+        Y("applicationPasswords"),
+        Y("privateKeys"),
+        Y("certificates"),
+        Y("serviceCredentials"),
+      );
+      const web = any(
+        contains("components", "Web application"),
+        Y("webExposure"),
+      );
+      const api = any(
+        contains("components", "API"),
+        Y("apiExposure"),
+        Y("apiFlows"),
+      );
+      const riskCatalog = [];
+      function addRisk(
+        id,
+        family,
+        title,
+        severity,
+        conditions,
+        description,
+        recommendations,
+        tags = [],
+      ) {
+        riskCatalog.push({
+          id,
+          family,
+          title,
+          severity,
+          conditions,
+          description,
+          justification:
+            "All stated activation conditions must match explicit project facts. Unknown controls do not count as missing.",
+          recommendations,
+          tags: [...new Set([...tags, family])],
+        });
+      }
+      addRisk(
+        "IAM-001",
+        "Identity and Authentication",
+        "Authentication without MFA",
+        "High",
+        all(any({ answered: "auth" }, { nonempty: "userTypes" }), N("mfa")),
+        "A compromised password can give an attacker direct access to the project.",
+        [
+          "Enforce phishing-resistant MFA for interactive access.",
+          "Apply conditional access and monitor authentication anomalies.",
+        ],
+        ["authentication"],
+      );
+      addRisk(
+        "IAM-002",
+        "Identity and Authentication",
+        "Shared accounts prevent individual accountability",
+        "High",
+        Y("sharedAccounts"),
+        "Several users acting through one account weaken attribution and revocation.",
+        [
+          "Issue individual accounts with named owners.",
+          "Remove shared interactive access and retain attributable audit records.",
+        ],
+      );
+      addRisk(
+        "IAM-003",
+        "Identity and Authentication",
+        "Local accounts require separate lifecycle control",
+        "Medium",
+        Y("localAccounts"),
+        "Local identities may escape centralized access reviews and offboarding.",
+        [
+          "Prefer federation with the organization’s identity provider.",
+          "Inventory local accounts and test timely revocation.",
+        ],
+      );
+      addRisk(
+        "IAM-004",
+        "Identity and Authentication",
+        "Excessive user privileges",
+        "High",
+        all(Y("privileged"), N("leastPrivilege")),
+        "Broad permissions increase the impact of compromised identities.",
+        [
+          "Define role-based access with minimum privileges.",
+          "Perform recurring entitlement reviews and remove unused access.",
+        ],
+      );
+      addRisk(
+        "IAM-005",
+        "Identity and Authentication",
+        "Manual identity lifecycle may leave orphaned access",
+        "Medium",
+        all({ nonempty: "userTypes" }, N("lifecycle")),
+        "Departures and role changes may not be reflected promptly in project access.",
+        [
+          "Connect account provisioning and removal to authoritative HR events.",
+          "Test offboarding and periodically reconcile active identities.",
+        ],
+      );
+      addRisk(
+        "SVC-000",
+        "Service Accounts / Machine-to-Machine",
+        "Machine identity security review",
+        "Informational",
+        machine,
+        "Technical identities need explicit ownership, purpose and authentication controls.",
+        [
+          "Inventory machine identities and assign an accountable owner.",
+          "Use a dedicated identity per application and document its permissions.",
+        ],
+      );
+      addRisk(
+        "SVC-001",
+        "Service Accounts / Machine-to-Machine",
+        "Static secret used to authenticate a service account",
+        "High",
+        all(machine, Y("staticSecrets")),
+        "A reusable machine credential can be stolen and replayed without user interaction.",
+        [
+          "Use a dedicated technical identity with least privilege.",
+          "Store machine secrets in a managed vault.",
+          "Implement automatic rotation and prefer short-lived credentials.",
+          "Log identity use and avoid sharing identities across applications.",
+        ],
+        ["static credentials"],
+      );
+      addRisk(
+        "SVC-002",
+        "Service Accounts / Machine-to-Machine",
+        "Long-lived API key used for Machine-to-Machine communication",
+        "High",
+        all(
+          any(Y("m2m"), contains("userTypes", "Machine-to-Machine identities")),
+          eq("auth", "API Key"),
+          N("rotation"),
+        ),
+        "Unrotated API keys extend the period during which a leaked key can be abused.",
+        [
+          "Prefer workload identity, OAuth client assertions or mutual TLS.",
+          "Rotate and scope API keys; monitor their use.",
+        ],
+      );
+      addRisk(
+        "SVC-003",
+        "Service Accounts / Machine-to-Machine",
+        "Machine account shared across applications",
+        "High",
+        all(machine, Y("sharedService")),
+        "A shared identity prevents application-level attribution and expands compromise scope.",
+        [
+          "Issue one workload identity per application and environment.",
+          "Separate permissions and audit trails for each integration.",
+        ],
+      );
+      addRisk(
+        "SVC-004",
+        "Service Accounts / Machine-to-Machine",
+        "Machine identity has excessive privileges",
+        "High",
+        all(machine, N("machineLeastPrivilege")),
+        "Technical access may expose more data or operations than the integration needs.",
+        [
+          "Restrict tokens to specific audiences and scopes.",
+          "Remove standing administrative privileges from application identities.",
+        ],
+      );
+      addRisk(
+        "SVC-005",
+        "Service Accounts / Machine-to-Machine",
+        "Machine activity cannot be attributed",
+        "Medium",
+        all(machine, N("machineLogging")),
+        "Incident investigations cannot reliably identify the workload responsible.",
+        [
+          "Log workload identity, destination, outcome and correlation ID.",
+          "Centralize and protect machine authentication records.",
+        ],
+      );
+      addRisk(
+        "SVC-006",
+        "Service Accounts / Machine-to-Machine",
+        "Machine communication has no authentication",
+        "Critical",
+        all(machine, eq("auth", "None")),
+        "An unauthenticated machine endpoint may accept impersonated callers.",
+        [
+          "Require workload authentication such as mTLS or scoped OAuth tokens.",
+          "Deny anonymous machine operations and test authorization boundaries.",
+        ],
+      );
+      addRisk(
+        "SEC-001",
+        "Secrets Management",
+        "Secrets committed to source code",
+        "Critical",
+        any(Y("sourceSecrets"), eq("secretStorage", "Source code")),
+        "Source repositories and their history can expose reusable credentials.",
+        [
+          "Revoke and replace exposed credentials, including historical copies.",
+          "Use vault references and automated repository secret scanning.",
+        ],
+      );
+      addRisk(
+        "SEC-002",
+        "Secrets Management",
+        "Secrets stored in configuration files",
+        "High",
+        any(Y("configSecrets"), eq("secretStorage", "Configuration file")),
+        "Configuration, backups and deployment artifacts may spread plaintext secrets.",
+        [
+          "Replace embedded secrets with runtime vault injection.",
+          "Restrict file access and audit distribution of configuration artifacts.",
+        ],
+      );
+      addRisk(
+        "SEC-003",
+        "Secrets Management",
+        "No vault for application secrets",
+        "High",
+        all(secretUse, N("vault")),
+        "Secret ownership, access policies and revocation may be inconsistent.",
+        [
+          "Adopt a centrally managed secrets vault.",
+          "Use workload identities to retrieve only required secrets.",
+        ],
+      );
+      addRisk(
+        "SEC-004",
+        "Secrets Management",
+        "Credentials lack automatic rotation",
+        "High",
+        all(secretUse, N("rotation")),
+        "Long-lived credentials increase the impact of unnoticed exposure.",
+        [
+          "Automate rotation with overlap and rollback support.",
+          "Define credential expiry, ownership and emergency revocation procedures.",
+        ],
+      );
+      addRisk(
+        "SEC-005",
+        "Secrets Management",
+        "Long-lived API keys",
+        "Medium",
+        all(any(Y("apiKeys"), eq("auth", "API Key")), N("shortLived")),
+        "An API key remains valid beyond a single task or short session.",
+        [
+          "Use short-lived scoped tokens where supported.",
+          "Set expiry dates and review unused keys.",
+        ],
+      );
+      addRisk(
+        "DAT-001",
+        "Data",
+        "Sensitive data stored without encryption",
+        "High",
+        all(sensitive, N("encryptedRest")),
+        "Storage theft, snapshot exposure or unauthorized infrastructure access can disclose data.",
+        [
+          "Enable encryption for databases, objects and backups.",
+          "Separate key administration and control decryption permissions.",
+        ],
+      );
+      addRisk(
+        "DAT-002",
+        "Data",
+        "Sensitive data transmitted without encryption",
+        "High",
+        all(sensitive, N("encryptedTransit")),
+        "Data can be intercepted or modified between components.",
+        [
+          "Require current TLS for all sensitive data paths.",
+          "Validate certificates and disable plaintext protocol fallback.",
+        ],
+      );
+      addRisk(
+        "DAT-003",
+        "Data",
+        "Externally hosted data needs boundary validation",
+        "Medium",
+        all(Y("data"), Y("externalHosting")),
+        "Data leaves direct organizational control and requires clear hosting and access guarantees.",
+        [
+          "Document hosting regions, tenants and administrative access.",
+          "Validate encryption, contractual safeguards and deletion evidence.",
+        ],
+      );
+      addRisk(
+        "DAT-004",
+        "Data",
+        "Required automatic deletion is missing",
+        "Medium",
+        all(Y("data"), Y("deletionRequired"), N("deletion")),
+        "Data may remain accessible after its justified retention period.",
+        [
+          "Implement policy-based deletion, including replicas and exports.",
+          "Record deletion outcomes and define lawful backup expiry.",
+        ],
+      );
+      addRisk(
+        "DAT-005",
+        "Data",
+        "Retention policy requires verification",
+        "Medium",
+        all(Y("data"), Y("retentionRequired")),
+        "Retention obligations must be translated into enforceable storage policies.",
+        [
+          "Approve a retention schedule per data category.",
+          "Test expiry, legal holds and deletion across dependent systems.",
+        ],
+      );
+      addRisk(
+        "NET-001",
+        "Network",
+        "Overly permissive network flows",
+        "High",
+        all(Y("network"), N("restrictFlows")),
+        "Unnecessary sources, destinations or ports expand lateral movement paths.",
+        [
+          "Allow only documented source / destination / protocol combinations.",
+          "Review firewall rules and remove broad or obsolete access.",
+        ],
+      );
+      addRisk(
+        "NET-002",
+        "Network",
+        "Cross-zone flows without segmentation",
+        "High",
+        all(Y("network"), Y("crossZone"), N("segmentation")),
+        "A compromise can cross trust boundaries without an effective enforcement point.",
+        [
+          "Define trust zones and enforce explicit inter-zone policy.",
+          "Test isolation and monitor denied cross-zone traffic.",
+        ],
+      );
+      addRisk(
+        "NET-003",
+        "Network",
+        "Unencrypted network flow",
+        "High",
+        { flow: "unencrypted" },
+        "A recorded flow explicitly uses no transport encryption.",
+        [
+          "Enable TLS, SSH or equivalent authenticated encryption.",
+          "Remove plaintext transport and verify endpoint certificate validation.",
+        ],
+      );
+      addRisk(
+        "NET-004",
+        "Network",
+        "Uncontrolled outbound Internet traffic",
+        "Medium",
+        all(Y("network"), Y("outbound"), N("egressControl")),
+        "Unrestricted egress facilitates command-and-control and data exfiltration.",
+        [
+          "Restrict egress to necessary destinations and protocols.",
+          "Monitor DNS, proxy and firewall events for unusual outbound activity.",
+        ],
+      );
+      addRisk(
+        "NET-005",
+        "Network",
+        "Internet access reaches internal systems",
+        "High",
+        Y("internetInternal"),
+        "An Internet-origin path can reach a higher-trust internal environment.",
+        [
+          "Terminate external access in an isolated ingress zone.",
+          "Apply identity-aware access and strict downstream segmentation.",
+        ],
+      );
+      addRisk(
+        "WEB-001",
+        "Web Application",
+        "Internet-exposed web application needs security review",
+        "Medium",
+        Y("webExposure"),
+        "An externally reachable application is accessible to untrusted clients.",
+        [
+          "Complete threat modeling and application security testing before launch.",
+          "Apply secure deployment baselines and timely vulnerability remediation.",
+        ],
+      );
+      addRisk(
+        "WEB-002",
+        "Web Application",
+        "Exposed application has no reverse proxy or WAF",
+        "High",
+        all(Y("webExposure"), N("reverseProxy"), N("waf")),
+        "The application is directly exposed without either declared perimeter protection.",
+        [
+          "Place the service behind a hardened reverse proxy or managed gateway.",
+          "Evaluate WAF controls, request limits and origin access restrictions.",
+        ],
+      );
+      addRisk(
+        "WEB-003",
+        "Web Application",
+        "Weak session-management controls",
+        "High",
+        all(web, N("sessionControls")),
+        "Stolen or persistent sessions can bypass account authentication controls.",
+        [
+          "Enforce Secure, HttpOnly and appropriate SameSite cookies.",
+          "Expire sessions, rotate session identifiers and test logout invalidation.",
+        ],
+      );
+      addRisk(
+        "WEB-004",
+        "Web Application",
+        "Application authorization is not enforced",
+        "High",
+        all(web, N("appAuthorization")),
+        "Authenticated users may access data or functions outside their role.",
+        [
+          "Enforce authorization server-side for every resource and operation.",
+          "Test cross-user and cross-tenant object access.",
+        ],
+      );
+      addRisk(
+        "API-001",
+        "API",
+        "API without authentication",
+        "Critical",
+        all(api, any(eq("auth", "None"), { flow: "unauthenticated" })),
+        "Unauthenticated API operations may disclose data or permit unauthorized changes.",
+        [
+          "Require explicit authentication for protected operations.",
+          "Deny by default and test token audiences, scopes and object permissions.",
+        ],
+      );
+      addRisk(
+        "API-002",
+        "API",
+        "API has no rate limiting",
+        "Medium",
+        all(api, N("rateLimit")),
+        "Unbounded requests can exhaust resources or enable credential abuse.",
+        [
+          "Apply per-client quotas, burst limits and payload limits.",
+          "Alert on abnormal usage and test resource-exhaustion safeguards.",
+        ],
+      );
+      addRisk(
+        "API-003",
+        "API",
+        "API operations lack application logging",
+        "Medium",
+        all(api, N("appLogs")),
+        "API abuse may not leave sufficient investigation evidence.",
+        [
+          "Log client identity, operation, status and correlation ID.",
+          "Redact secrets and personal data from request logs.",
+        ],
+      );
+      addRisk(
+        "API-004",
+        "API",
+        "Overly broad API permissions",
+        "High",
+        all(api, N("appAuthorization")),
+        "Token possession may grant access beyond the intended operation.",
+        [
+          "Use audience-bound, least-privilege scopes.",
+          "Enforce object-level authorization and test negative cases.",
+        ],
+      );
+      addRisk(
+        "REM-001",
+        "Remote Access",
+        "Remote administrator access without MFA",
+        "Critical",
+        all(Y("remoteAdmin"), N("adminMfa")),
+        "A stolen administrator password can compromise the system remotely.",
+        [
+          "Require phishing-resistant MFA on every privileged remote path.",
+          "Route administrative sessions through a monitored bastion or PAM.",
+        ],
+      );
+      addRisk(
+        "REM-002",
+        "Remote Access",
+        "Direct remote SSH / RDP administration",
+        "High",
+        all(Y("remoteAdmin"), Y("directAdmin")),
+        "Direct management access exposes privileged services and bypasses mediation.",
+        [
+          "Remove direct Internet access to SSH and RDP.",
+          "Use a bastion or identity-aware access gateway with session logging.",
+        ],
+      );
+      addRisk(
+        "REM-003",
+        "Remote Access",
+        "Permanent contractor access",
+        "Medium",
+        all(Y("contractorAccess"), N("timeBoundAccess")),
+        "Supplier access may remain active beyond the approved assignment.",
+        [
+          "Issue time-limited access tied to an approved business owner.",
+          "Review and revoke dormant contractor sessions and accounts.",
+        ],
+      );
+      addRisk(
+        "REM-004",
+        "Remote Access",
+        "Remote access from unmanaged devices",
+        "High",
+        all(
+          any(Y("vpn"), Y("ztna"), Y("remoteAdmin"), Y("contractorAccess")),
+          Y("unmanaged"),
+        ),
+        "A compromised personal device may gain a trusted access path.",
+        [
+          "Require managed devices and posture checks.",
+          "Use isolated virtual workspaces for exceptional third-party access.",
+        ],
+      );
+      addRisk(
+        "ADM-001",
+        "Administration / PAM",
+        "Administrator accounts are not separated",
+        "High",
+        N("dedicatedAdmin"),
+        "Daily-use accounts may also hold administrative authority.",
+        [
+          "Separate named privileged identities from everyday user accounts.",
+          "Prevent privileged sign-in from untrusted endpoints.",
+        ],
+      );
+      addRisk(
+        "ADM-002",
+        "Administration / PAM",
+        "Shared administrator accounts",
+        "High",
+        Y("sharedAdmin"),
+        "Shared privileged credentials prevent reliable accountability.",
+        [
+          "Replace shared access with individual privileged identities.",
+          "Broker unavoidable shared accounts through PAM with individual attribution.",
+        ],
+      );
+      addRisk(
+        "ADM-003",
+        "Administration / PAM",
+        "Remote administration lacks bastion and PAM",
+        "High",
+        all(Y("remoteAdmin"), N("pam"), N("bastion")),
+        "Privileged sessions lack a declared central enforcement and recording point.",
+        [
+          "Mediate privileged access through PAM or a bastion.",
+          "Require approval, short access duration and session recording.",
+        ],
+      );
+      addRisk(
+        "ADM-004",
+        "Administration / PAM",
+        "Administrative activity is not logged",
+        "High",
+        N("adminLogs"),
+        "Privileged changes cannot be reconstructed reliably after an incident.",
+        [
+          "Record administrative commands, configuration changes and identity.",
+          "Forward tamper-resistant audit records outside the administered system.",
+        ],
+      );
+      addRisk(
+        "ADM-005",
+        "Administration / PAM",
+        "Standing privileged access",
+        "Medium",
+        all(Y("privileged"), N("jit")),
+        "Permanent administrative permissions widen the opportunity for misuse.",
+        [
+          "Enable time-bound privilege elevation.",
+          "Require justification and approval for sensitive roles.",
+        ],
+      );
+      addRisk(
+        "SUP-000",
+        "Third Parties / Suppliers",
+        "Supplier security and dependency review",
+        "Informational",
+        third,
+        "Third-party relationships introduce contractual, operational and access boundaries.",
+        [
+          "Inventory suppliers, services and business dependencies.",
+          "Document assurance evidence, incident notification and exit obligations.",
+        ],
+      );
+      addRisk(
+        "SUP-001",
+        "Third Parties / Suppliers",
+        "Privileged third-party access to the system",
+        "High",
+        Y("supplierAdmin"),
+        "An external operator can affect confidentiality, integrity and availability.",
+        [
+          "Use named supplier accounts with MFA and time-bound permissions.",
+          "Record privileged sessions and define emergency revocation.",
+        ],
+      );
+      addRisk(
+        "SUP-002",
+        "Third Parties / Suppliers",
+        "Supplier access to project data",
+        "Medium",
+        all(third, Y("supplierData")),
+        "Data handling depends on supplier staff, systems and subprocessors.",
+        [
+          "Assess supplier controls and minimize accessible data.",
+          "Agree audit rights, breach notification and deletion requirements.",
+        ],
+      );
+      addRisk(
+        "SUP-003",
+        "Third Parties / Suppliers",
+        "No supplier exit plan",
+        "Medium",
+        all(third, N("exitPlan")),
+        "Service failure or termination may make migration and data recovery difficult.",
+        [
+          "Test data export and document a transition plan.",
+          "Define exit assistance, formats, timelines and deletion evidence.",
+        ],
+      );
+      addRisk(
+        "SUP-004",
+        "Third Parties / Suppliers",
+        "Supplier assurance review not completed",
+        "High",
+        all(third, N("supplierReview")),
+        "The organization has no completed review of supplier security commitments.",
+        [
+          "Complete a proportionate technical and contractual assessment.",
+          "Resolve material findings before granting sensitive access.",
+        ],
+      );
+      addRisk(
+        "CLD-001",
+        "Cloud / SaaS",
+        "Cloud configuration and shared-responsibility review",
+        "Medium",
+        cloud,
+        "Provider controls do not cover every customer identity, tenant and workload setting.",
+        [
+          "Document the provider / customer shared-responsibility split.",
+          "Apply hardened baselines and continuously assess configuration drift.",
+        ],
+      );
+      addRisk(
+        "CLD-002",
+        "Cloud / SaaS",
+        "Privileged cloud identities require strict control",
+        "High",
+        all(cloud, Y("privileged")),
+        "Cloud administrative roles may control multiple workloads and security boundaries.",
+        [
+          "Restrict privileged cloud roles and enable just-in-time elevation.",
+          "Enforce MFA, separate admin identities and review tenant audit logs.",
+        ],
+      );
+      addRisk(
+        "CLD-003",
+        "Cloud / SaaS",
+        "Public cloud workload exposure",
+        "High",
+        all(cloud, exposed),
+        "A public cloud endpoint can expose workload data or management surfaces.",
+        [
+          "Inventory public endpoints and block unintended public storage.",
+          "Validate ingress restrictions and continuously monitor exposure.",
+        ],
+      );
+      addRisk(
+        "CLD-004",
+        "Cloud / SaaS",
+        "Cloud encryption key governance review",
+        "Medium",
+        all(cloud, sensitive),
+        "Encryption effectiveness depends on key access, rotation and recovery controls.",
+        [
+          "Define key ownership, access separation and rotation.",
+          "Test key recovery and verify provider-managed versus customer-managed requirements.",
+        ],
+      );
+      addRisk(
+        "BKP-001",
+        "Backup and Resilience",
+        "Critical business service has no backups",
+        "High",
+        all(criticalBusiness, N("backups")),
+        "Data loss may cause an unacceptable business interruption.",
+        [
+          "Implement scheduled backups aligned to an approved RPO.",
+          "Protect backup copies and test full recovery.",
+        ],
+      );
+      addRisk(
+        "BKP-002",
+        "Backup and Resilience",
+        "Backup requirement is unmet",
+        "High",
+        all(Y("data"), Y("backupRequired"), N("backups")),
+        "The declared data protection requirement has no backup mechanism.",
+        [
+          "Define backup scope, frequency and retention.",
+          "Validate that protected copies can restore all required data.",
+        ],
+      );
+      addRisk(
+        "BKP-003",
+        "Backup and Resilience",
+        "Backups are not immutable",
+        "High",
+        all(Y("backups"), N("immutable")),
+        "An attacker may encrypt or delete production and backup copies.",
+        [
+          "Keep an immutable or offline backup copy.",
+          "Separate backup deletion authority and enforce retention locks.",
+        ],
+      );
+      addRisk(
+        "BKP-004",
+        "Backup and Resilience",
+        "Restores have not been tested",
+        "High",
+        all(Y("backups"), N("restoreTest")),
+        "Backup completion does not demonstrate recoverability.",
+        [
+          "Run representative end-to-end restore exercises.",
+          "Measure recovery times and document recovery evidence.",
+        ],
+      );
+      addRisk(
+        "BKP-005",
+        "Backup and Resilience",
+        "Backups share production access boundaries",
+        "High",
+        all(Y("backups"), N("backupIsolated")),
+        "Production credential compromise may also compromise recovery copies.",
+        [
+          "Use separate backup identities and access policies.",
+          "Isolate recovery administration and monitor backup deletion.",
+        ],
+      );
+      addRisk(
+        "BKP-006",
+        "Backup and Resilience",
+        "Recovery objectives do not meet business needs",
+        "High",
+        N("recoveryAligned"),
+        "Recovery capability is explicitly not aligned with required RPO / RTO.",
+        [
+          "Agree measurable business recovery objectives.",
+          "Test capacity and recovery procedures against those objectives.",
+        ],
+      );
+      addRisk(
+        "LOG-001",
+        "Logging / Detection",
+        "No centralized security logging",
+        "Medium",
+        N("centralLogs"),
+        "Distributed records can be lost or altered during a compromise.",
+        [
+          "Forward critical logs to an access-controlled central platform.",
+          "Monitor ingestion health, integrity and retention.",
+        ],
+      );
+      addRisk(
+        "LOG-002",
+        "Logging / Detection",
+        "Authentication activity is not logged",
+        "High",
+        N("authLogs"),
+        "Account takeover and failed access attempts may remain invisible.",
+        [
+          "Collect successful and failed authentication events.",
+          "Alert on suspicious sign-ins and privileged account changes.",
+        ],
+      );
+      addRisk(
+        "LOG-003",
+        "Logging / Detection",
+        "No security alerting",
+        "Medium",
+        N("alerts"),
+        "Collected events may not lead to timely detection or response.",
+        [
+          "Define detections for high-impact threats and assign responders.",
+          "Test alert delivery and escalation using representative events.",
+        ],
+      );
+      addRisk(
+        "LOG-004",
+        "Logging / Detection",
+        "Public exposure needs detection and vulnerability management",
+        "Medium",
+        exposed,
+        "Externally reachable services require perimeter monitoring and vulnerability response.",
+        [
+          "Monitor ingress, application and authentication security events.",
+          "Scan exposed assets and define remediation deadlines.",
+        ],
+      );
+      addRisk(
+        "LOG-005",
+        "Logging / Detection",
+        "No vulnerability-management process",
+        "High",
+        all(exposed, N("vulnManagement")),
+        "Exposed vulnerabilities may persist without ownership or deadlines.",
+        [
+          "Continuously inventory and scan Internet-facing assets.",
+          "Assign patch owners and verify remediation.",
+        ],
+      );
+      addRisk(
+        "LOG-006",
+        "Logging / Detection",
+        "Log retention is insufficient",
+        "Medium",
+        N("retentionAdequate"),
+        "Investigation records may expire before an incident is discovered.",
+        [
+          "Set retention based on threat, legal and investigation needs.",
+          "Validate searchable and archived log coverage.",
+        ],
+      );
+      addRisk(
+        "LOG-007",
+        "Logging / Detection",
+        "Unsynchronized event timestamps",
+        "Low",
+        N("timeSync"),
+        "Inconsistent timestamps hinder incident reconstruction and correlation.",
+        [
+          "Use a reliable authenticated or controlled time source.",
+          "Monitor clock drift across components and logging platforms.",
+        ],
+      );
+      addRisk(
+        "END-001",
+        "Endpoint",
+        "Unmanaged or personal endpoints in scope",
+        "High",
+        any(Y("unmanaged"), Y("byod")),
+        "Endpoint security posture may be outside organizational control.",
+        [
+          "Enforce device enrollment and minimum security posture.",
+          "Provide isolated access for devices that cannot be managed.",
+        ],
+      );
+      addRisk(
+        "END-002",
+        "Endpoint",
+        "Endpoints lack detection and response",
+        "Medium",
+        all(
+          any(Y("unmanaged"), Y("byod"), { nonempty: "userTypes" }),
+          N("edr"),
+        ),
+        "Compromised endpoints may operate without endpoint detection coverage.",
+        [
+          "Deploy and monitor endpoint detection and response.",
+          "Define isolation and incident-response procedures.",
+        ],
+      );
+      addRisk(
+        "END-003",
+        "Endpoint",
+        "Administration from standard user workstations",
+        "High",
+        all(Y("remoteAdmin"), N("adminWorkstation")),
+        "Routine browsing and productivity activity can expose privileged sessions.",
+        [
+          "Use hardened, dedicated privileged access workstations.",
+          "Restrict privileged access to trusted administration devices.",
+        ],
+      );
+      addRisk(
+        "BCP-001",
+        "Business Continuity",
+        "No disaster recovery plan for a critical service",
+        "High",
+        all(criticalBusiness, N("dr")),
+        "A major disruption may cause prolonged and uncoordinated recovery.",
+        [
+          "Document and exercise a disaster recovery runbook.",
+          "Assign recovery roles and business escalation contacts.",
+        ],
+      );
+      addRisk(
+        "BCP-002",
+        "Business Continuity",
+        "Critical dependency without redundancy",
+        "High",
+        all(Y("criticalDependencies"), N("redundancy")),
+        "A single dependent component can interrupt the entire service.",
+        [
+          "Identify single points of failure and feasible alternatives.",
+          "Test failover or define acceptable contingency arrangements.",
+        ],
+      );
+      addRisk(
+        "BCP-003",
+        "Business Continuity",
+        "No degraded operating procedure",
+        "Medium",
+        all(criticalBusiness, N("degraded")),
+        "Business operations may stop entirely while technology is unavailable.",
+        [
+          "Define minimum viable business operations during an outage.",
+          "Test manual or reduced-capability procedures with business owners.",
+        ],
+      );
+      addRisk(
+        "REG-001",
+        "Regulatory / Compliance",
+        "Personal data protection assessment",
+        "Medium",
+        all(Y("data"), contains("dataClasses", "Personal")),
+        "Personal data processing requires purpose, minimization and appropriate safeguards.",
+        [
+          "Document purpose, lawful basis and data subject rights handling.",
+          "Assess whether a DPIA is needed and validate processor agreements.",
+        ],
+      );
+      addRisk(
+        "REG-002",
+        "Regulatory / Compliance",
+        "Data hosted outside the EU",
+        "High",
+        all(Y("data"), Y("outsideEU")),
+        "International hosting can introduce transfer, jurisdiction and access obligations.",
+        [
+          "Map hosting, support access and international transfers.",
+          "Obtain legal review of transfer mechanisms and supplementary safeguards.",
+        ],
+      );
+      addRisk(
+        "REG-003",
+        "Regulatory / Compliance",
+        "Regulated data needs explicit control mapping",
+        "Medium",
+        all(Y("data"), contains("dataClasses", "Regulated")),
+        "Applicable obligations must be mapped to implemented and evidenced controls.",
+        [
+          "Identify applicable sector and contractual requirements.",
+          "Assign control owners and retain compliance evidence.",
+        ],
+      );
+      addRisk(
+        "AI-001",
+        "Artificial Intelligence",
+        "Confidential information sent to an AI supplier",
+        "High",
+        all(Y("ai"), Y("aiSaas"), Y("aiConfidential")),
+        "Sensitive information may leave the organization through prompts and context.",
+        [
+          "Limit and redact confidential content before submission.",
+          "Validate hosting, retention and contractual confidentiality guarantees.",
+        ],
+      );
+      addRisk(
+        "AI-002",
+        "Artificial Intelligence",
+        "Supplier reuses AI customer data for training",
+        "High",
+        all(Y("ai"), Y("aiSaas"), Y("aiTraining")),
+        "Model training reuse may create uncontrolled secondary use of project data.",
+        [
+          "Disable training reuse or obtain explicit approved terms.",
+          "Restrict the data permitted in prompts and uploads.",
+        ],
+      );
+      addRisk(
+        "AI-003",
+        "Artificial Intelligence",
+        "AI agent has excessive tool permissions",
+        "Critical",
+        all(Y("ai"), Y("aiAgents"), Y("aiTools"), N("aiLeastPrivilege")),
+        "An agent can invoke sensitive operations beyond its intended task.",
+        [
+          "Limit tools and identities to explicit, narrowly scoped actions.",
+          "Require human approval for consequential operations and audit tool use.",
+        ],
+      );
+      addRisk(
+        "AI-004",
+        "Artificial Intelligence",
+        "AI tools lack prompt-injection safeguards",
+        "High",
+        all(Y("ai"), Y("aiTools"), N("aiInjection")),
+        "Untrusted content may redirect an agent to disclose data or misuse tools.",
+        [
+          "Separate untrusted content from trusted instructions.",
+          "Validate tool inputs and outputs; test adversarial retrieved content.",
+        ],
+      );
+      addRisk(
+        "AI-005",
+        "Artificial Intelligence",
+        "Consequential AI actions have no human approval",
+        "High",
+        all(Y("ai"), Y("aiAgents"), Y("aiTools"), N("aiHumanReview")),
+        "An incorrect or manipulated model output can trigger real business changes.",
+        [
+          "Require approval for sensitive writes, disclosures and destructive actions.",
+          "Provide auditable execution limits, rollback and emergency shutdown.",
+        ],
+      );
+      addRisk(
+        "AI-006",
+        "Artificial Intelligence",
+        "Personal data submitted to an AI model",
+        "Medium",
+        all(Y("ai"), Y("aiPersonal")),
+        "Prompts and model outputs can introduce additional personal-data processing.",
+        [
+          "Minimize and pseudonymize personal data in AI workflows.",
+          "Review legal basis, retention, provider terms and data-subject rights.",
+        ],
+      );
+      /* 3. Deterministic rule engine and explainability. */
+      function factResult(condition, s) {
+        if (condition.all) {
+          const children = condition.all.map((c) => factResult(c, s));
+          return {
+            match: children.every((c) => c.match),
+            reasons: children.flatMap((c) => c.reasons),
+          };
+        }
+        if (condition.any) {
+          const matched = condition.any
+            .map((c) => factResult(c, s))
+            .filter((c) => c.match);
+          return {
+            match: matched.length > 0,
+            reasons: matched.flatMap((c) => c.reasons),
+          };
+        }
+        if (condition.collection) {
+          const count = s[condition.collection].length;
+          return {
+            match: count > 0,
+            reasons: [
+              `${count} third-party service${count === 1 ? "" : "s"} documented`,
+            ],
+          };
+        }
+        if (condition.flow) {
+          const matches = s.flows.filter((f) =>
+            condition.flow === "unencrypted"
+              ? f.encryption === "No"
+              : f.authentication === "None",
+          );
+          return {
+            match: matches.length > 0,
+            reasons: matches.map(
+              (f) =>
+                `${f.source} → ${f.destination}: ${condition.flow === "unencrypted" ? "encryption = No" : "authentication = None"}`,
+            ),
+          };
+        }
+        if (condition.answered) {
+          const v = s.answers[condition.answered];
+          return {
+            match: !!v,
+            reasons: [
+              `${fieldIndex[condition.answered].label}: ${v || "Unknown"}`,
+            ],
+          };
+        }
+        if (condition.nonempty) {
+          const v = s.answers[condition.nonempty];
+          return {
+            match: Array.isArray(v) && v.length > 0,
+            reasons: [
+              `${fieldIndex[condition.nonempty].label}: ${Array.isArray(v) ? v.join(", ") : "Unknown"}`,
+            ],
+          };
+        }
+        const value = s.answers[condition.key];
+        const match =
+          condition.op === "includes"
+            ? Array.isArray(value) && value.includes(condition.value)
+            : value === condition.value;
+        return {
+          match,
+          reasons: [
+            `${fieldIndex[condition.key]?.label || condition.key}: ${condition.op === "includes" ? condition.value : displayValue(value)}`,
+          ],
+        };
+      }
+      function conditionDescription(c) {
+        if (c.all)
+          return "(" + c.all.map(conditionDescription).join(" AND ") + ")";
+        if (c.any)
+          return "(" + c.any.map(conditionDescription).join(" OR ") + ")";
+        if (c.collection) return "At least one documented third-party service";
+        if (c.flow)
+          return (
+            "A documented flow has " +
+            (c.flow === "unencrypted"
+              ? "encryption = No"
+              : "authentication = None")
+          );
+        if (c.answered) return fieldIndex[c.answered].label + " is specified";
+        if (c.nonempty)
+          return fieldIndex[c.nonempty].label + " has at least one selection";
+        return `${fieldIndex[c.key]?.label || c.key} ${c.op === "includes" ? "includes" : "="} ${displayValue(c.value)}`;
+      }
+      function displayValue(v) {
+        return v === "yes"
+          ? "Yes"
+          : v === "no"
+            ? "No"
+            : v === "" || v == null
+              ? "Unknown"
+              : Array.isArray(v)
+                ? v.join(", ")
+                : String(v);
+      }
+      function evaluateRisks(s) {
+        const automatic = riskCatalog.flatMap((r) => {
+          const result = factResult(r.conditions, s);
+          return result.match
+            ? [{ ...r, reasons: [...new Set(result.reasons)], automatic: true }]
+            : [];
+        });
+        const manual = s.manualRisks.map((r) => ({
+          ...r,
+          reasons: [
+            r.justification || "Added by the consultant after project review.",
+          ],
+          automatic: false,
+        }));
+        return [...automatic, ...manual]
+          .map((r) => ({
+            ...r,
+            ...(s.decisions[r.id] || {}),
+            severity: s.decisions[r.id]?.severity || r.severity,
+            status: s.decisions[r.id]?.status || "To Be Confirmed",
+            hidden: !!s.decisions[r.id]?.hidden,
+            comments: s.decisions[r.id]?.comments || "",
+          }))
+          .sort(
+            (a, b) =>
+              SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity) ||
+              a.id.localeCompare(b.id),
+          );
+      }
+      function actionKey(riskId, index) {
+        return `${riskId}::${index}`;
+      }
+      function getAction(s, risk, index) {
+        return {
+          selected: false,
+          status: "To Assess",
+          owner: "",
+          due: "",
+          comment: "",
+          ...(s.actions[actionKey(risk.id, index)] || {}),
+          key: actionKey(risk.id, index),
+          text: risk.recommendations[index],
+          riskId: risk.id,
+          riskTitle: risk.title,
+          family: risk.family,
+          severity: risk.severity,
+        };
+      }
+      function activeActions(s) {
+        return evaluateRisks(s)
+          .filter((r) => !r.hidden && r.status !== "Not Applicable")
+          .flatMap((r) =>
+            r.recommendations
+              .map((_, i) => getAction(s, r, i))
+              .filter((a) => a.selected),
+          );
+      }
+      function visibleRisks() {
+        return evaluateRisks(state).filter((r) => !r.hidden);
+      }
+      function familiesOf(items) {
+        return [...new Set(items.map((r) => r.family))].sort();
+      }
+      /* 4. State management and defensive import normalization. */
+      function blankState() {
+        return {
+          schema: "isp-assistant",
+          version: APP_VERSION,
+          updatedAt: "",
+          answers: {},
+          componentsCustom: [],
+          flows: [],
+          dataTypes: [],
+          thirdParties: [],
+          manualRisks: [],
+          customCatalog: [],
+          decisions: {},
+          actions: {},
+        };
+      }
+      let state = blankState();
+      const ui = {
+        view: "qualification",
+        section: "general",
+        riskPage: 1,
+        libraryPage: 1,
+        riskSearch: "",
+        riskFamily: "",
+        riskSeverity: "",
+        riskStatus: "",
+        showHidden: false,
+        actionSearch: "",
+        actionFamily: "",
+        actionSeverity: "",
+        actionStatus: "",
+        actionOwner: "",
+        librarySearch: "",
+        libraryFamily: "",
+      };
+      let saveTimer,
+        toastTimer,
+        storageAvailable = true;
+      const $ = (selector) => document.querySelector(selector);
+      const esc = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const safeText = (v, max = 12000) =>
+        typeof v === "string" ? v.slice(0, max) : "";
+      const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+      function uuid() {
+        return (
+          "MAN-" +
+          (globalThis.crypto?.randomUUID?.() ||
+            Date.now().toString(36) + "-" + Math.random().toString(36).slice(2))
+        );
+      }
+      const recordFields = {
+        flow: [
+          ["source", "Source"],
+          ["destination", "Destination"],
+          ["protocol", "Protocol / port"],
+          ["dataType", "Data type"],
+          ["authentication", "Authentication"],
+          ["encryption", "Encryption"],
+          ["comment", "Comment"],
+        ],
+        thirdParty: [
+          ["name", "Supplier name"],
+          ["function", "Function"],
+          ["data", "Accessible data"],
+          ["access", "Access type"],
+          ["privilege", "Privilege level"],
+          ["location", "Location"],
+          ["dependency", "Business dependency"],
+          ["comment", "Comments"],
+        ],
+        dataType: [
+          ["name", "Data type"],
+          ["location", "Location"],
+          ["volume", "Volume"],
+          ["retention", "Retention duration"],
+          ["confidentiality", "Confidentiality"],
+          ["integrity", "Integrity"],
+          ["availability", "Availability"],
+          ["traceability", "Traceability"],
+        ],
+      };
+      const collectionFor = {
+        flow: "flows",
+        thirdParty: "thirdParties",
+        dataType: "dataTypes",
+      };
+      function normalizeProject(raw) {
+        if (
+          !raw ||
+          typeof raw !== "object" ||
+          Array.isArray(raw) ||
+          raw.schema !== "isp-assistant" ||
+          raw.version !== APP_VERSION
+        )
+          throw Error(
+            "This is not a supported ISP Assistant project (version 1).",
+          );
+        const clean = blankState();
+        clean.updatedAt = safeText(raw.updatedAt, 80);
+        clean.componentsCustom = (
+          Array.isArray(raw.componentsCustom) ? raw.componentsCustom : []
+        )
+          .filter((v) => typeof v === "string" && v.trim())
+          .slice(0, 100)
+          .map((v) => v.slice(0, 120));
+        for (const [key, f] of Object.entries(fieldIndex)) {
+          const v =
+            raw.answers && own(raw.answers, key) ? raw.answers[key] : undefined;
+          if (f.type === "multi") {
+            const allowed =
+              f.key === "components"
+                ? [...f.options, ...clean.componentsCustom]
+                : f.options;
+            clean.answers[key] = (Array.isArray(v) ? v : []).filter(
+              (t) => typeof t === "string" && allowed.includes(t),
+            );
+          } else if (f.type === "bool") {
+            if (["yes", "no", ""].includes(v)) clean.answers[key] = v;
+          } else if (f.type === "select") {
+            if (f.options.includes(v) || v === "") clean.answers[key] = v;
+          } else clean.answers[key] = safeText(v);
+        }
+        for (const [type, collection] of Object.entries(collectionFor))
+          clean[collection] = (
+            Array.isArray(raw[collection]) ? raw[collection] : []
+          )
+            .slice(0, 500)
+            .map((record) =>
+              Object.fromEntries(
+                recordFields[type].map(([k]) => [
+                  k,
+                  safeText(record?.[k], 3000),
+                ]),
+              ),
+            );
+        function cleanManual(items) {
+          const seen = new Set();
+          return (Array.isArray(items) ? items : [])
+            .slice(0, 300)
+            .filter(
+              (r) =>
+                r &&
+                typeof r.id === "string" &&
+                /^MAN-[\w-]{1,100}$/.test(r.id) &&
+                !seen.has(r.id) &&
+                (seen.add(r.id), true) &&
+                typeof r.title === "string" &&
+                r.title.trim(),
+            )
+            .map((r) => ({
+              id: r.id,
+              title: safeText(r.title, 300),
+              family: safeText(r.family, 150) || "Custom",
+              severity: SEVERITIES.includes(r.severity) ? r.severity : "Medium",
+              description: safeText(r.description),
+              justification: safeText(r.justification),
+              recommendations: (Array.isArray(r.recommendations)
+                ? r.recommendations
+                : []
+              )
+                .filter((t) => typeof t === "string" && t.trim())
+                .slice(0, 30)
+                .map((t) => t.slice(0, 2000)),
+              tags: ["Custom"],
+            }));
+        }
+        clean.manualRisks = cleanManual(raw.manualRisks);
+        clean.customCatalog = cleanManual(raw.customCatalog);
+        const known = [
+          ...riskCatalog,
+          ...clean.manualRisks,
+          ...clean.customCatalog,
+        ];
+        for (const r of known) {
+          const d =
+            raw.decisions && own(raw.decisions, r.id)
+              ? raw.decisions[r.id]
+              : null;
+          if (d && typeof d === "object")
+            clean.decisions[r.id] = {
+              status: RISK_STATUSES.includes(d.status)
+                ? d.status
+                : "To Be Confirmed",
+              severity: SEVERITIES.includes(d.severity)
+                ? d.severity
+                : r.severity,
+              hidden: d.hidden === true,
+              comments: safeText(d.comments),
+            };
+          r.recommendations.forEach((_, i) => {
+            const key = actionKey(r.id, i),
+              a =
+                raw.actions && own(raw.actions, key) ? raw.actions[key] : null;
+            if (a && typeof a === "object")
+              clean.actions[key] = {
+                selected: a.selected === true,
+                status: ACTION_STATUSES.includes(a.status)
+                  ? a.status
+                  : "To Assess",
+                owner: safeText(a.owner, 200),
+                due: /^\d{4}-\d{2}-\d{2}$/.test(a.due || "") ? a.due : "",
+                comment: safeText(a.comment),
+              };
+          });
+        }
+        return clean;
+      }
+      function setDecision(id, key, value) {
+        state.decisions[id] = { ...(state.decisions[id] || {}), [key]: value };
+        changed(false);
+        render();
+      }
+      function setAction(key, field, value) {
+        state.actions[key] = { ...(state.actions[key] || {}), [field]: value };
+        changed(false);
+        updateChrome();
+      }
+      function changed(renderPage = false) {
+        state.updatedAt = new Date().toISOString();
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => saveLocal(false), 350);
+        updateChrome();
+        if (renderPage) render();
+      }
+      function saveLocal(manual = false) {
+        clearTimeout(saveTimer);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          storageAvailable = true;
+          $("#storage-warning").hidden = true;
+          if (manual) toast("Assessment saved in this browser.");
+        } catch (e) {
+          storageAvailable = false;
+          $("#storage-warning").textContent =
+            "Browser storage is unavailable or full. Changes remain in memory; use Export Project to download a backup.";
+          $("#storage-warning").hidden = false;
+          if (manual)
+            toast(
+              "Local save unavailable. Export a JSON backup to keep your work.",
+            );
+        }
+      }
+      function restoreLocal() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) state = normalizeProject(JSON.parse(saved));
+        } catch (e) {
+          $("#storage-warning").textContent =
+            "The saved assessment could not be restored. It has not been overwritten. Import a JSON backup or start a new assessment.";
+          $("#storage-warning").hidden = false;
+          storageAvailable = false;
+        }
+      }
+      function toast(message) {
+        clearTimeout(toastTimer);
+        $("#toast").textContent = message;
+        $("#toast").hidden = false;
+        toastTimer = setTimeout(() => ($("#toast").hidden = true), 4200);
+      }
+      /* 5. UI primitives and rendering. */
+      const iconPaths = {
+        shield: "M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3Z M8 12l3 3 5-6",
+        layers: "m12 3 9 5-9 5-9-5 9-5Z M3 12l9 5 9-5 M3 16l9 5 9-5",
+        check: "M9 3h6 M9 5H5v16h14V5h-4 M8 13l3 3 5-6",
+        book: "M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Zm0 0v15",
+        save: "M5 3h12l4 4v14H3V3h2Z M7 3v6h10V3 M7 21v-8h10v8",
+        folder: "M3 6h6l2 2h10v12H3V6Z M3 6V4h6l2 2",
+        download: "M12 3v12 m-5-5 5 5 5-5 M4 16v5h16v-5",
+        chevron: "m7 10 5 5 5-5",
+        plus: "M12 5v14 M5 12h14",
+        arrow: "M4 12h16 m-6-6 6 6-6 6",
+        close: "m6 6 12 12 M6 18 18 6",
+        flow: "M3 6h6v6H3V6Z M15 12h6v6h-6v-6Z M9 9h9v3",
+        building: "M5 21V3h14v18 M9 7h1 m4 0h1 M9 11h1 m4 0h1 M10 21v-6h4v6",
+        database:
+          "M20 6c0 2-4 3-8 3S4 8 4 6s4-3 8-3 8 1 8 3Z M4 6v12c0 2 4 3 8 3s8-1 8-3V6 M4 12c0 2 4 3 8 3s8-1 8-3",
+        search: "M17 17l4 4 M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+        spark: "m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z",
+      };
+      function icon(name) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${iconPaths[name] || iconPaths.shield}"/></svg>`;
+      }
+      function populateIcons() {
+        document.querySelectorAll("[data-icon]").forEach((el) => {
+          el.innerHTML = icon(el.dataset.icon);
+          el.removeAttribute("data-icon");
+        });
+      }
+      function badge(severity) {
+        return `<span class="badge sev-${esc(severity)}">${esc(severity)}</span>`;
+      }
+      function options(values, current, placeholder) {
+        return (
+          (placeholder !== undefined
+            ? `<option value="">${esc(placeholder)}</option>`
+            : "") +
+          values
+            .map(
+              (v) =>
+                `<option value="${esc(v)}" ${current === v ? "selected" : ""}>${esc(v)}</option>`,
+            )
+            .join("")
+        );
+      }
+      function selectField(label, values, current, attrs = "", placeholder) {
+        return `<label class="field"><span class="field-label">${esc(label)}</span><select ${attrs}>${options(values, current, placeholder)}</select></label>`;
+      }
+      function inputField(
+        label,
+        value,
+        attrs = "",
+        type = "text",
+        placeholder = "",
+      ) {
+        return `<label class="field"><span class="field-label">${esc(label)}</span><input type="${type}" value="${esc(value)}" placeholder="${esc(placeholder)}" ${attrs}></label>`;
+      }
+      function sectionStats(section) {
+        const applicable = section.fields.filter(
+          (f) => !f.show || f.show(state),
+        );
+        const completed = applicable.filter((f) =>
+          Array.isArray(state.answers[f.key])
+            ? state.answers[f.key].length > 0
+            : !!state.answers[f.key],
+        );
+        return { complete: completed.length, total: applicable.length };
+      }
+      function updateChrome() {
+        const risks = visibleRisks(),
+          reviewed = risks.filter((r) => r.status !== "To Be Confirmed").length,
+          pct = risks.length ? Math.round((reviewed / risks.length) * 100) : 0;
+        $("#project-title").textContent =
+          state.answers.name || "Untitled project";
+        $("#progress-label").textContent =
+          `${pct}% reviewed · ${reviewed}/${risks.length}`;
+        $("#progress-fill").style.width = pct + "%";
+        $("#nav-risk-count").textContent = risks.length;
+        $("#nav-action-count").textContent = activeActions(state).length;
+        document
+          .querySelectorAll("[data-view]")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.view === ui.view),
+          );
+        document.title =
+          (state.answers.name ? state.answers.name + " · " : "") +
+          "ISP Assistant";
+      }
+      function heading(eyebrow, title, description, actions = "") {
+        return `<div class="page-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${description}</p></div>${actions ? `<div class="heading-actions">${actions}</div>` : ""}</div>`;
+      }
+      function demoButton() {
+        return `<button data-command="demo">${icon("spark")}Load Demo Project</button>`;
+      }
+      function render() {
+        const main = $("#main");
+        if (ui.view === "qualification") main.innerHTML = renderQualification();
+        else if (ui.view === "risks") main.innerHTML = renderRiskAnalysis();
+        else if (ui.view === "actions") main.innerHTML = renderActions();
+        else main.innerHTML = renderLibrary();
+        updateChrome();
+        refreshResults();
+      }
+      function renderField(f) {
+        const v = state.answers[f.key] ?? "",
+          id = "answer-" + f.key;
+        let body = "";
+        if (f.type === "bool")
+          body = `<div class="segmented" role="group" aria-labelledby="label-${esc(f.key)}">${[
+            ["", "Unknown"],
+            ["yes", "Yes"],
+            ["no", "No"],
+          ]
+            .map(
+              ([value, label]) =>
+                `<label><input type="radio" name="${esc(f.key)}" data-answer="${esc(f.key)}" value="${value}" ${v === value ? "checked" : ""}><span>${label}</span></label>`,
+            )
+            .join("")}</div>`;
+        else if (f.type === "multi") {
+          const choices =
+            f.key === "components"
+              ? [...f.options, ...state.componentsCustom]
+              : f.options;
+          body = `<div class="chips" role="group" aria-labelledby="label-${esc(f.key)}">${choices.map((value) => `<label class="chip"><input type="checkbox" data-answer="${esc(f.key)}" value="${esc(value)}" ${Array.isArray(v) && v.includes(value) ? "checked" : ""}>${esc(value)}</label>`).join("")}</div>`;
+        } else if (f.type === "select")
+          body = `<select id="${id}" data-answer="${esc(f.key)}">${options(f.options, v, "Not specified")}</select>`;
+        else if (f.type === "textarea")
+          body = `<textarea id="${id}" data-answer="${esc(f.key)}" placeholder="${esc(f.placeholder)}" maxlength="12000">${esc(v)}</textarea>`;
+        else
+          body = `<input id="${id}" data-answer="${esc(f.key)}" value="${esc(v)}" placeholder="${esc(f.placeholder)}" maxlength="12000">`;
+        const special = f.type === "bool" || f.type === "multi";
+        return `<div class="field ${f.wide ? "wide" : ""}"><${special ? "span" : "label"} ${special ? 'id="label-' + esc(f.key) + '"' : 'for="' + id + '"'} class="field-label">${esc(f.label)}</${special ? "span" : "label"}>${body}</div>`;
+      }
+      function renderQualification() {
+        const section = sections.find((s) => s.id === ui.section),
+          idx = sections.indexOf(section),
+          stats = sectionStats(section);
+        let extra = "";
+        if (section.id === "architecture")
+          extra = `<div class="list-header"><span class="muted">Missing a component?</span><button class="small" data-command="component">${icon("plus")}Add Component</button></div>`;
+        if (section.id === "network")
+          extra = renderRecords("flow", "Documented flows", "flow");
+        if (section.id === "data")
+          extra = renderRecords("dataType", "Data inventory", "database");
+        if (section.id === "thirdParties")
+          extra = renderRecords("thirdParty", "Supplier inventory", "building");
+        return (
+          heading(
+            "01 / DEFINE THE SCOPE",
+            "Project qualification",
+            "Build a clear picture of your project. Relevant security risks surface as you go.",
+            demoButton() +
+              `<button class="primary" data-command="analyze">Review risks ${icon("arrow")}</button>`,
+          ) +
+          (!state.answers.name
+            ? `<div class="intro-banner">${icon("shield")}<p><strong>A clearer path from project to protection.</strong>Start with the essentials, or explore a realistic HR project. Every risk is linked to the facts that triggered it.</p>${demoButton()}</div>`
+            : "") +
+          `<div class="qualification-layout"><nav class="panel section-nav" aria-label="Qualification sections">${sections
+            .map((s, i) => {
+              const st = sectionStats(s);
+              return `<button data-section="${s.id}" class="${s.id === ui.section ? "active" : ""}" ${s.id === ui.section ? 'aria-current="step"' : ""}><span class="section-number">${String(i + 1).padStart(2, "0")}</span>${esc(s.title)}${st.complete === st.total ? '<span class="check">✓</span>' : ""}</button>`;
+            })
+            .join(
+              "",
+            )}</nav><section class="panel"><div class="panel-head"><div><h2>${esc(section.title)}</h2><p>Section ${idx + 1} of ${sections.length} · ${stats.complete} of ${stats.total} visible fields answered</p></div><span class="step-pill">${String(idx + 1).padStart(2, "0")} / 12</span></div><div class="panel-body"><p class="section-description">${esc(section.description)}</p><div class="field-grid">${section.fields
+            .filter((f) => !f.show || f.show(state))
+            .map(renderField)
+            .join(
+              "",
+            )}</div>${extra}${section.id === "secrets" ? '<p class="required-note">Do not enter passwords, tokens, keys or other secret values. Document only the controls used to protect them.</p>' : ""}</div><div class="section-footer"><button data-section="${sections[Math.max(0, idx - 1)].id}" ${idx === 0 ? "disabled" : ""}>Previous</button><small>Changes save automatically in this browser</small>${idx < sections.length - 1 ? `<button class="primary" data-section="${sections[idx + 1].id}">Next section ${icon("arrow")}</button>` : `<button class="primary" data-command="analyze">Review risks ${icon("arrow")}</button>`}</div></section></div>`
+        );
+      }
+      function renderRecords(type, title, iconName) {
+        const records = state[collectionFor[type]],
+          label = {
+            flow: "Flow",
+            thirdParty: "Third Party",
+            dataType: "Data Type",
+          }[type];
+        return `<div class="list-header"><h3>${title} <span class="badge neutral">${records.length}</span></h3><button class="small" data-add-record="${type}">${icon("plus")}Add ${label}</button></div>${
+          records.length
+            ? records
+                .map(
+                  (r, i) =>
+                    `<div class="entity-card"><div class="entity-icon">${icon(iconName)}</div><div class="entity-content"><strong>${type === "flow" ? `${esc(r.source)} <span class="flow-arrow">→</span> ${esc(r.destination)}` : esc(r.name)}</strong><small>${
+                      recordFields[type]
+                        .filter(
+                          ([k]) =>
+                            ![
+                              "name",
+                              "source",
+                              "destination",
+                              "comment",
+                            ].includes(k) && r[k],
+                        )
+                        .map(([k, label]) => `${esc(label)}: ${esc(r[k])}`)
+                        .join(" · ") || "Details not specified"
+                    }</small>${r.comment ? `<small>${esc(r.comment)}</small>` : ""}</div><button class="small quiet" data-edit-record="${type}" data-index="${i}">Edit</button></div>`,
+                )
+                .join("")
+            : `<div class="callout">${icon("plus")}Add ${label.toLowerCase()} details when available. Documented flows and suppliers also inform the risk engine.</div>`
+        }`;
+      }
+      function statsHTML(risks) {
+        const values = SEVERITIES.slice(0, 4);
+        return `<div class="stats"><div class="stat total"><div class="stat-label">Identified risks</div><div class="stat-value">${risks.length}</div><div class="stat-sub">${risks.filter((r) => r.status === "To Be Confirmed").length} awaiting review</div></div>${values.map((v) => `<div class="stat"><div class="stat-label"><span class="dot" style="background:var(--${v.toLowerCase()})"></span>${v}</div><div class="stat-value">${risks.filter((r) => r.severity === v).length}</div><div class="stat-sub">${v === "Critical" ? "Prioritize review" : v === "High" ? "Needs attention" : v === "Medium" ? "Plan treatment" : "Monitor & review"}</div></div>`).join("")}<div class="stat"><div class="stat-label">Risk families</div><div class="stat-value">${familiesOf(risks).length}</div><div class="stat-sub">${risks.filter((r) => r.severity === "Informational").length} informational risks</div></div></div>`;
+      }
+      function renderRiskAnalysis() {
+        const risks = evaluateRisks(state),
+          visible = risks.filter((r) => !r.hidden),
+          families = familiesOf(risks);
+        return (
+          heading(
+            "02 / UNDERSTAND THE EXPOSURE",
+            "Risk analysis",
+            "A traceable view of your project’s security risks. Review the evidence, then decide what applies.",
+            `<button data-command="manual-risk">${icon("plus")}Add Risk</button><button class="primary" data-command="action-plan">View action plan ${icon("arrow")}</button>`,
+          ) +
+          statsHTML(visible) +
+          `<div class="analysis-layout"><section class="panel"><div class="panel-head"><div><h2>Identified risks</h2><p>Deterministic rules · consultant-led decisions</p></div><span class="badge neutral">${risks.filter((r) => r.hidden).length} suppressed</span></div><div class="filters"><input aria-label="Search risks" placeholder="Search risks or evidence…" data-filter="riskSearch" value="${esc(ui.riskSearch)}"><select aria-label="Filter risk severity" data-filter="riskSeverity">${options(SEVERITIES, ui.riskSeverity, "All severities")}</select><select aria-label="Filter risk status" data-filter="riskStatus">${options(RISK_STATUSES, ui.riskStatus, "All statuses")}</select><label><input type="checkbox" data-filter="showHidden" ${ui.showHidden ? "checked" : ""}>Show suppressed</label></div><div id="risk-results"></div></section><aside class="panel family-overview"><h3>Risk family overview</h3><p>Select a family to focus your review.</p><div class="family-buttons"><button class="family-button ${!ui.riskFamily ? "active" : ""}" data-family=""><div class="family-row"><strong>All risk families</strong><span>${visible.length}</span></div></button>${families
+            .map((f) => {
+              const items = visible.filter((r) => r.family === f);
+              return `<button class="family-button ${ui.riskFamily === f ? "active" : ""}" data-family="${esc(f)}"><div class="family-row"><span>${esc(f)}</span><span>${items.length}</span></div><div class="family-bar">${SEVERITIES.map((v) => `<span style="width:${items.length ? (items.filter((r) => r.severity === v).length / items.length) * 100 : 0}%;background:var(--${v === "Informational" ? "info" : v.toLowerCase()})"></span>`).join("")}</div></button>`;
+            })
+            .join(
+              "",
+            )}</div><p style="margin:18px 0 0">Severity reflects review priority. Unknown answers do not imply missing controls.</p></aside></div>`
+        );
+      }
+      function resetFilterPage(key) {
+        if (key.startsWith("risk") || key === "showHidden") ui.riskPage = 1;
+        if (key.startsWith("library")) ui.libraryPage = 1;
+      }
+      function pagination(kind, page, total, size) {
+        const pages = Math.ceil(total / size);
+        return pages > 1
+          ? `<div class="section-footer"><button class="small" data-list-page="${kind}" data-page="${page - 1}" ${page === 1 ? "disabled" : ""}>Previous</button><span class="muted" style="font-size:11px">Page ${page} of ${pages} · ${total} results</span><button class="small" data-list-page="${kind}" data-page="${page + 1}" ${page === pages ? "disabled" : ""}>Next</button></div>`
+          : "";
+      }
+      function renderRiskResults() {
+        const allRisks = evaluateRisks(state),
+          q = ui.riskSearch.toLowerCase(),
+          risks = allRisks.filter(
+            (r) =>
+              (ui.showHidden || !r.hidden) &&
+              (!ui.riskFamily || r.family === ui.riskFamily) &&
+              (!ui.riskSeverity || r.severity === ui.riskSeverity) &&
+              (!ui.riskStatus || r.status === ui.riskStatus) &&
+              [r.title, r.family, r.description, r.id, ...r.reasons]
+                .join(" ")
+                .toLowerCase()
+                .includes(q),
+          );
+        const target = $("#risk-results");
+        if (!target) return;
+        ui.riskPage = Math.max(
+          1,
+          Math.min(ui.riskPage, Math.ceil(risks.length / 8) || 1),
+        );
+        const pageRisks = risks.slice((ui.riskPage - 1) * 8, ui.riskPage * 8);
+        target.innerHTML =
+          `<div class="list-count">${risks.length} ${risks.length === 1 ? "risk" : "risks"}${ui.riskFamily ? " · " + esc(ui.riskFamily) : ""}${ui.riskFamily ? '<button class="quiet small" data-family="">Clear family filter ×</button>' : ""}</div>` +
+          (risks.length
+            ? `<div class="risk-list">${pageRisks.map((r) => `<article class="risk-card"><div class="risk-card-top"><div><span class="risk-id">${esc(r.id)}</span><h3><button class="risk-link" data-risk="${esc(r.id)}">${esc(r.title)}</button></h3></div>${badge(r.severity)}</div><p>${esc(r.description)}</p><div class="risk-trigger">${icon("check")} ${esc(r.reasons[0])}${r.reasons.length > 1 ? ` <span class="muted">+${r.reasons.length - 1} more fact${r.reasons.length > 2 ? "s" : ""}</span>` : ""}</div><div class="risk-meta"><span>${esc(r.family)}</span><span>·</span><span class="badge ${r.status === "Mitigated" ? "good" : "neutral"}">${esc(r.status)}</span>${!r.automatic ? '<span class="badge neutral">Manual</span>' : ""}${r.hidden ? '<span class="badge neutral">Suppressed</span>' : ""}<button class="quiet small" data-risk="${esc(r.id)}" style="margin-left:auto">Review ${icon("arrow")}</button></div></article>`).join("")}</div>` +
+              pagination("risk", ui.riskPage, risks.length, 8)
+            : emptyHTML(
+                allRisks.length
+                  ? "No risks match your filters"
+                  : "Your assessment starts with the project",
+                allRisks.length
+                  ? "Try another search, severity, status or risk family."
+                  : "Describe the project to activate relevant risk rules. No detected risks does not establish that a project is secure.",
+                allRisks.length
+                  ? '<button data-command="clear-risk-filters">Clear filters</button>'
+                  : '<button class="primary" data-command="qualify">Qualify project</button>' +
+                      demoButton(),
+              ));
+      }
+      function emptyHTML(title, description, actions = "") {
+        return `<div class="empty"><div class="empty-icon">${icon("shield")}</div><h3>${title}</h3><p>${description}</p><div class="actions">${actions}</div></div>`;
+      }
+      function renderActions() {
+        const actions = activeActions(state),
+          done = actions.filter((a) => a.status === "Implemented").length;
+        return (
+          heading(
+            "03 / TURN INSIGHT INTO ACTION",
+            "Action plan",
+            "One place to manage the recommendations you retain. Assign ownership and track delivery.",
+            `<button data-command="analyze">Review risks</button><button class="primary" data-command="print">${icon("download")}Export Report</button>`,
+          ) +
+          `<div class="intro-banner">${icon("check")}<p><strong>${actions.length} retained actions · ${done} implemented</strong>Actions are retained from risk details. Suppressed, no-longer-triggered and Not Applicable risks are excluded; their decisions remain saved.</p><span class="badge good">${actions.length ? Math.round((done / actions.length) * 100) : 0}% complete</span></div><section class="panel"><div class="filters"><input aria-label="Search actions" placeholder="Search actions or associated risks…" data-filter="actionSearch" value="${esc(ui.actionSearch)}"><select aria-label="Filter action family" data-filter="actionFamily">${options(familiesOf(actions), ui.actionFamily, "All families")}</select><select aria-label="Filter action severity" data-filter="actionSeverity">${options(SEVERITIES, ui.actionSeverity, "All priorities")}</select><select aria-label="Filter action status" data-filter="actionStatus">${options(ACTION_STATUSES, ui.actionStatus, "All statuses")}</select><input aria-label="Filter action owner" placeholder="Filter by owner…" data-filter="actionOwner" value="${esc(ui.actionOwner)}"></div><div id="action-results"></div></section>`
+        );
+      }
+      function actionFields(a, compact = false) {
+        const attr = (field) =>
+          `data-action-key="${esc(a.key)}" data-action-field="${field}"`;
+        return `<div class="action-fields">${selectField("Status", ACTION_STATUSES, a.status, attr("status"))}${inputField("Owner", a.owner, attr("owner"), "text", "Assign owner")}${inputField("Due date", a.due, attr("due"), "date")}<label class="field wide"><span class="field-label">Comment</span><textarea ${attr("comment")} maxlength="12000" placeholder="Implementation notes…">${esc(a.comment)}</textarea></label></div>`;
+      }
+      function todayLocal() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }
+      function renderActionResults() {
+        const q = ui.actionSearch.toLowerCase(),
+          actions = activeActions(state).filter(
+            (a) =>
+              (!ui.actionFamily || a.family === ui.actionFamily) &&
+              (!ui.actionSeverity || a.severity === ui.actionSeverity) &&
+              (!ui.actionStatus || a.status === ui.actionStatus) &&
+              a.owner.toLowerCase().includes(ui.actionOwner.toLowerCase()) &&
+              [a.text, a.riskTitle, a.family, a.comment]
+                .join(" ")
+                .toLowerCase()
+                .includes(q),
+          );
+        const target = $("#action-results");
+        if (!target) return;
+        target.innerHTML =
+          `<div class="list-count">${actions.length} retained action${actions.length === 1 ? "" : "s"}</div>` +
+          (actions.length
+            ? `<div class="action-grid">${actions.map((a) => `<article class="action-card"><div class="risk-card-top">${badge(a.severity)}<span class="badge neutral">${esc(a.family)}</span></div><h3>${esc(a.text)}</h3><p>From <button class="risk-link" data-risk="${esc(a.riskId)}">${esc(a.riskTitle)}</button></p>${actionFields(a)}<footer><span class="${a.due && a.due < todayLocal() && !["Implemented", "Not Retained", "Risk Accepted"].includes(a.status) ? "overdue" : ""}">${a.due && a.due < todayLocal() && !["Implemented", "Not Retained", "Risk Accepted"].includes(a.status) ? "Overdue · " : ""}${esc(a.riskId)}</span><button class="small quiet" data-remove-action="${esc(a.key)}">Remove from plan</button></footer></article>`).join("")}</div>`
+            : emptyHTML(
+                "A focused plan starts with a decision",
+                "Open a risk and select the recommendations you want to retain, or adjust the filters.",
+                `<button class="primary" data-command="analyze">Review risks</button><button data-command="clear-action-filters">Clear filters</button>`,
+              ));
+      }
+      function renderLibrary() {
+        const catalog = [...riskCatalog, ...state.customCatalog];
+        return (
+          heading(
+            "REFERENCE / THE RULES BEHIND THE REVIEW",
+            "Risk library",
+            "Browse the catalogue, activation conditions and recommended controls. Every automatic finding has a traceable rule.",
+            `<button class="primary" data-command="custom-template">${icon("plus")}Add Custom Risk</button>`,
+          ) +
+          `<p class="library-summary">${catalog.length} catalogue entries · ${familiesOf(catalog).length} risk families · ${state.customCatalog.length} local custom templates</p><section class="panel"><div class="filters"><input aria-label="Search risk library" placeholder="Search risks, conditions or recommendations…" data-filter="librarySearch" value="${esc(ui.librarySearch)}"><select aria-label="Filter library family" data-filter="libraryFamily">${options(familiesOf(catalog), ui.libraryFamily, "All families")}</select></div><div id="library-results"></div></section>`
+        );
+      }
+      function renderLibraryResults() {
+        const q = ui.librarySearch.toLowerCase(),
+          items = [...riskCatalog, ...state.customCatalog].filter(
+            (r) =>
+              (!ui.libraryFamily || r.family === ui.libraryFamily) &&
+              [
+                r.id,
+                r.title,
+                r.family,
+                r.description,
+                r.conditions
+                  ? conditionDescription(r.conditions)
+                  : "Manual activation",
+                ...r.recommendations,
+                ...r.tags,
+              ]
+                .join(" ")
+                .toLowerCase()
+                .includes(q),
+          );
+        const target = $("#library-results");
+        if (!target) return;
+        ui.libraryPage = Math.max(
+          1,
+          Math.min(ui.libraryPage, Math.ceil(items.length / 12) || 1),
+        );
+        const pageItems = items.slice(
+          (ui.libraryPage - 1) * 12,
+          ui.libraryPage * 12,
+        );
+        target.innerHTML = `<div class="list-count">${items.length} catalogue entries</div><div class="library-list">${pageItems.map((r) => `<details><summary>${icon("chevron")}<strong><span class="risk-id">${esc(r.id)} · ${esc(r.family)}</span><br>${esc(r.title)}</strong>${badge(r.severity)}</summary><div class="library-detail"><p>${esc(r.description)}</p><strong>Activation conditions</strong><p class="condition">${esc(r.conditions ? conditionDescription(r.conditions) : "Manual activation only — add this template to the current assessment after consultant review.")}</p><p>${esc(r.justification)}</p><strong>Recommendations</strong><ul>${r.recommendations.map((t) => `<li>${esc(t)}</li>`).join("")}</ul><div class="tags">${r.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>${!r.conditions ? `<p style="margin-top:16px"><button class="small" data-use-template="${esc(r.id)}">Add to assessment</button></p>` : ""}</div></details>`).join("")}</div>${pagination("library", ui.libraryPage, items.length, 12)}${!items.length ? emptyHTML("No matching catalogue entries", "Try a different search or family.") : ""}`;
+      }
+      // Refresh lists without replacing search fields or moving keyboard focus.
+      function refreshResults() {
+        if (ui.view === "risks") renderRiskResults();
+        if (ui.view === "actions") renderActionResults();
+        if (ui.view === "library") renderLibraryResults();
+      }
+      /* 6. Dialogs and editing. */
+      function showDialog(title, body, footer = "", kicker = "") {
+        const d = $("#dialog");
+        d.innerHTML = `<div class="dialog-head"><div>${kicker}<h2 id="dialog-title">${esc(title)}</h2></div><button class="close" data-close aria-label="Close dialog">${icon("close")}</button></div><div class="dialog-body">${body}</div>${footer ? `<div class="dialog-footer">${footer}</div>` : ""}`;
+        if (!d.open) d.showModal();
+        d.scrollTop = 0;
+      }
+      function closeDialog() {
+        $("#dialog").close();
+      }
+      function confirmAction(title, description, command, label = "Continue") {
+        showDialog(
+          title,
+          `<p>${esc(description)}</p>`,
+          `<button data-close>Cancel</button><button class="primary" data-confirm="${command}">${esc(label)}</button>`,
+        );
+      }
+      function openRisk(id) {
+        const r = evaluateRisks(state).find((r) => r.id === id);
+        if (!r) return;
+        const body = `<p class="muted">${esc(r.description)}</p><h3>Why was this risk identified?</h3><ul class="reason-list">${r.reasons.map((t) => `<li>${esc(t)}</li>`).join("")}</ul><p class="field-help">${r.automatic ? "Matched project facts, evaluated with the catalogue rule." : "Manual consultant finding."} ${esc(r.justification)}</p><h3>Consultant decision</h3><div class="field-grid">${selectField("Status", RISK_STATUSES, r.status, `data-decision="status" data-risk-id="${esc(id)}"`)}${selectField("Severity", SEVERITIES, r.severity, `data-decision="severity" data-risk-id="${esc(id)}"`)}<label class="field wide"><span class="field-label">Assessment comments</span><textarea data-decision="comments" data-risk-id="${esc(id)}" maxlength="12000" placeholder="Evidence, assumptions and decision rationale…">${esc(r.comments)}</textarea></label></div><h3>Recommended security actions</h3><p class="field-help">Select recommendations to retain them in the action plan. Each action can be assigned and tracked independently.</p>${
+          r.recommendations
+            .map((t, i) => {
+              const a = getAction(state, r, i);
+              return `<div class="recommendation"><label><input type="checkbox" data-action-key="${esc(a.key)}" data-action-field="selected" ${a.selected ? "checked" : ""}>${esc(t)}</label>${actionFields(a, true)}</div>`;
+            })
+            .join("") ||
+          '<p class="muted">No recommendations recorded for this manual risk.</p>'
+        }`;
+        showDialog(
+          r.title,
+          body,
+          `<button class="danger" data-suppress="${esc(id)}" data-value="${!r.hidden}">${r.hidden ? "Restore risk" : "Suppress risk"}</button><button class="primary" data-close>Done</button>`,
+          `<span class="risk-id">${esc(r.id)} · ${esc(r.family)}</span>`,
+        );
+      }
+      function openRecord(type, index) {
+        const collection = collectionFor[type],
+          r = index === undefined ? {} : state[collection][index];
+        if (!r) return;
+        const names = {
+          flow: "network flow",
+          thirdParty: "third party",
+          dataType: "data type",
+        };
+        let body = `<form id="record-form" data-type="${type}" ${index === undefined ? "" : 'data-index="' + index + '"'}><div class="field-grid">`;
+        const choices = {
+          authentication: [
+            "Unknown",
+            "None",
+            "Password",
+            "API key",
+            "OAuth 2.0",
+            "mTLS / Certificate",
+            "Kerberos",
+            "Other",
+          ],
+          encryption: ["Unknown", "Yes", "No"],
+          privilege: ["Unknown", "Read-only", "Standard", "Privileged / admin"],
+          dependency: ["Unknown", "Low", "Medium", "High", "Critical"],
+          confidentiality: ["Unknown", "Low", "Medium", "High", "Critical"],
+          integrity: ["Unknown", "Low", "Medium", "High", "Critical"],
+          availability: ["Unknown", "Low", "Medium", "High", "Critical"],
+          traceability: ["Unknown", "Low", "Medium", "High", "Critical"],
+        };
+        body += recordFields[type]
+          .map(([key, label]) => {
+            const attrs = `name="${key}" ${["source", "destination", "name"].includes(key) ? "required" : ""} maxlength="3000"`;
+            return choices[key]
+              ? selectField(label, choices[key], r[key] || "Unknown", attrs)
+              : key === "comment"
+                ? `<label class="field wide"><span class="field-label">${label}</span><textarea name="comment" maxlength="3000">${esc(r[key])}</textarea></label>`
+                : inputField(
+                    label +
+                      (["source", "destination", "name"].includes(key)
+                        ? " *"
+                        : ""),
+                    r[key],
+                    attrs,
+                  );
+          })
+          .join("");
+        body +=
+          '</div><p class="required-note">* Required. Record control details only; never paste credential values.</p></form>';
+        showDialog(
+          `${index === undefined ? "Add" : "Edit"} ${names[type]}`,
+          body,
+          `${index === undefined ? "" : `<button class="danger" data-delete-record="${type}" data-index="${index}" style="margin-right:auto">Delete</button>`}<button data-close>Cancel</button><button type="submit" form="record-form" class="primary">Save ${names[type]}</button>`,
+        );
+      }
+      function openManualRisk(library = false) {
+        const familyList = familiesOf(riskCatalog);
+        showDialog(
+          library ? "Add custom risk template" : "Add a consultant risk",
+          `<form id="manual-form" data-library="${library}"><div class="field-grid">${inputField("Risk title *", "", 'name="title" required maxlength="300"')}${selectField("Default severity", SEVERITIES, "Medium", 'name="severity"')}${selectField("Risk family", familyList, "Data", 'name="family"')}${inputField("Custom family (optional)", "", 'name="customFamily" maxlength="150"')}<label class="field wide"><span class="field-label">Description *</span><textarea name="description" required maxlength="12000"></textarea></label><label class="field wide"><span class="field-label">Why does this risk apply? *</span><textarea name="justification" required maxlength="12000" placeholder="Project evidence and consultant rationale"></textarea></label><label class="field wide"><span class="field-label">Recommendations * · one per line</span><textarea name="recommendations" required maxlength="12000" placeholder="Define an accountable owner.&#10;Implement a verified control."></textarea></label></div>${library ? '<p class="required-note">Custom templates are stored locally and activated manually from the library; no automatic rule is implied.</p>' : ""}</form>`,
+          `<button data-close>Cancel</button><button type="submit" form="manual-form" class="primary">${library ? "Save to library" : "Add Risk"}</button>`,
+        );
+      }
+      function openComponent() {
+        showDialog(
+          "Add a component",
+          `<form id="component-form">${inputField("Component name *", "", 'name="name" required maxlength="120"', "text", "e.g. Message broker")}</form>`,
+          `<button data-close>Cancel</button><button class="primary" type="submit" form="component-form">Add Component</button>`,
+        );
+      }
+      /* 7. Import, export, report and demo data. */
+      function exportProject() {
+        const output = {
+          ...state,
+          updatedAt: state.updatedAt || new Date().toISOString(),
+          project: {
+            name: state.answers.name || "",
+            description: state.answers.description || "",
+            owner: state.answers.owner || "",
+          },
+          risks: evaluateRisks(state),
+          retainedRecommendations: activeActions(state),
+        };
+        const blob = new Blob([JSON.stringify(output, null, 2)], {
+            type: "application/json",
+          }),
+          url = URL.createObjectURL(blob),
+          a = document.createElement("a");
+        a.href = url;
+        a.download =
+          (state.answers.name || "isp-assessment")
+            .replace(/[^a-z0-9_-]+/gi, "-")
+            .slice(0, 80) + ".json";
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast("Project exported, including decisions and action details.");
+      }
+      async function importProject(file) {
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          toast("Import rejected: project files must be smaller than 5 MB.");
+          return;
+        }
+        try {
+          const parsed = normalizeProject(JSON.parse(await file.text()));
+          pendingImport = parsed;
+          confirmAction(
+            "Load this assessment?",
+            `Replace the current assessment with “${parsed.answers.name || "Untitled project"}”? Export your current work first if you need a backup.`,
+            "import",
+            "Load Project",
+          );
+        } catch (e) {
+          toast("Import failed: " + e.message);
+        }
+      }
+      let pendingImport = null;
+      function buildReport() {
+        const risks = evaluateRisks(state),
+          visible = risks.filter((r) => !r.hidden),
+          actions = activeActions(state),
+          answered = Object.values(state.answers).some((v) =>
+            Array.isArray(v) ? v.length : !!v,
+          );
+        const scope = sections
+          .map((s) => {
+            const entries = s.fields
+              .filter((f) => !f.show || f.show(state))
+              .filter((f) => {
+                const v = state.answers[f.key];
+                return Array.isArray(v) ? v.length : !!v;
+              });
+            return entries.length
+              ? `<h3>${esc(s.title)}</h3><ul>${entries.map((f) => `<li><strong>${esc(f.label)}:</strong> ${esc(displayValue(state.answers[f.key]))}</li>`).join("")}</ul>`
+              : "";
+          })
+          .join("");
+        const inventory = Object.entries(collectionFor)
+          .map(([type, collection]) =>
+            state[collection].length
+              ? `<h3>${esc({ flow: "Network flows", thirdParty: "Third parties", dataType: "Data inventory" }[type])}</h3>${state[
+                  collection
+                ]
+                  .map(
+                    (r) =>
+                      `<ul>${recordFields[type]
+                        .filter(([k]) => r[k])
+                        .map(
+                          ([k, label]) =>
+                            `<li><strong>${esc(label)}:</strong> ${esc(r[k])}</li>`,
+                        )
+                        .join("")}</ul>`,
+                  )
+                  .join("")}`
+              : "",
+          )
+          .join("");
+        $("#print-root").innerHTML =
+          `<div class="eyebrow">ISP ASSISTANT / SECURITY ASSESSMENT</div><h1>${esc(state.answers.name || "Untitled project")}</h1><p class="report-meta">Prepared ${esc(new Date().toLocaleString())} · Project owner: ${esc(state.answers.owner || "Not specified")}</p><p>${esc(state.answers.description || "No project description recorded.")}</p><p class="report-note">This assessment supports consultant judgment. Findings reflect explicit project answers and manual decisions. Unknown answers and areas outside the scope are not evidence of security or compliance.</p><h2>Assessment summary</h2><p>${visible.length} visible risks · ${risks.filter((r) => r.hidden).length} suppressed · ${familiesOf(visible).length} families · ${actions.length} retained actions</p><p>${SEVERITIES.map((v) => `${esc(v)}: ${visible.filter((r) => r.severity === v).length}`).join(" · ")}</p><h2>Project scope and recorded answers</h2>${scope || "<p>No qualification responses recorded.</p>"}${inventory}<h2 class="report-section">Risk assessment</h2>${
+            risks
+              .map(
+                (r) =>
+                  `<section class="report-risk"><div class="report-meta">${esc(r.id)} · ${esc(r.family)}${r.hidden ? " · SUPPRESSED" : ""}</div><h3>${esc(r.title)}</h3>${badge(r.severity)} <span class="badge neutral">${esc(r.status)}</span><p>${esc(r.description)}</p><strong>Why this applies</strong><ul>${r.reasons.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>${r.comments ? `<p><strong>Consultant comments:</strong> ${esc(r.comments)}</p>` : ""}<strong>Recommended controls</strong><ul>${r.recommendations
+                    .map((t, i) => {
+                      const a = getAction(state, r, i);
+                      return `<li>${esc(t)}${a.selected ? " [Retained · " + esc(a.status) + "]" : ""}${a.comment ? " — " + esc(a.comment) : ""}</li>`;
+                    })
+                    .join("")}</ul></section>`,
+              )
+              .join("") || "<p>No findings currently triggered.</p>"
+          }<h2 class="report-section">Consolidated action plan</h2>${actions.length ? `<table><thead><tr><th>Action / risk</th><th>Priority / status</th><th>Owner / due</th></tr></thead><tbody>${actions.map((a) => `<tr><td><strong>${esc(a.text)}</strong><br>${esc(a.riskId)} · ${esc(a.family)}${a.comment ? "<br>" + esc(a.comment) : ""}</td><td>${esc(a.severity)}<br>${esc(a.status)}</td><td>${esc(a.owner || "Unassigned")}<br>${esc(a.due || "No due date")}</td></tr>`).join("")}</tbody></table>` : "<p>No retained actions.</p>"}<h2>Preserved decisions on inactive findings</h2><p class="report-meta">These findings no longer match the current scope. Their previous decisions remain in the exported project.</p>${
+            Object.entries(state.decisions)
+              .filter(([id]) => !risks.some((r) => r.id === id))
+              .map(
+                ([id, d]) =>
+                  `<p>${esc(id)} · ${esc(d.severity)} · ${esc(d.status)}${d.hidden ? " · Suppressed" : ""}${d.comments ? " — " + esc(d.comments) : ""}</p>`,
+              )
+              .join("") || "<p>None.</p>"
+          }`;
+      }
+      function printReport() {
+        buildReport();
+        window.print();
+      }
+      function loadDemo() {
+        state = blankState();
+        Object.assign(state.answers, {
+          name: "People Hub — HR platform",
+          description:
+            "Azure-hosted employee self-service application for leave requests and payroll documents. An API connects the HR database to an external benefits SaaS provider using a technical account.",
+          objective:
+            "Give 2,400 employees a single place to access HR services and automate benefits enrollment.",
+          owner: "HR Transformation · Platform Engineering",
+          environment: "Cloud",
+          projectType: "New project",
+          criticality: "High",
+          components: [
+            "Web application",
+            "API",
+            "Database",
+            "Cloud IaaS / PaaS",
+            "Entra ID / identity provider",
+            "Reverse proxy",
+            "Backup solution",
+          ],
+          network: "yes",
+          internalComms: "yes",
+          internetComms: "yes",
+          inbound: "yes",
+          outbound: "yes",
+          saasComms: "yes",
+          appComms: "yes",
+          apiFlows: "yes",
+          m2m: "yes",
+          protocols: "HTTPS / TCP 443",
+          publicExposure: "yes",
+          dmz: "yes",
+          crossZone: "yes",
+          segmentation: "yes",
+          restrictFlows: "yes",
+          egressControl: "no",
+          data: "yes",
+          dataClasses: ["Personal", "Sensitive", "Financial"],
+          externalHosting: "yes",
+          outsideEU: "no",
+          encryptedRest: "yes",
+          encryptedTransit: "yes",
+          backupRequired: "yes",
+          retentionRequired: "yes",
+          deletionRequired: "yes",
+          deletion: "no",
+          dataLocation: "Azure — West Europe (Netherlands)",
+          dataVolume: "2,400 employee profiles and payroll documents",
+          retention: "Employment + 5 years; legal review pending",
+          confidentiality: "High",
+          integrity: "High",
+          availability: "High",
+          traceability: "High",
+          userTypes: [
+            "Internal users",
+            "Administrators",
+            "Service accounts",
+            "Machine-to-Machine identities",
+          ],
+          auth: "API Key",
+          mfa: "yes",
+          sso: "yes",
+          federation: "yes",
+          localAccounts: "no",
+          sharedAccounts: "no",
+          privileged: "yes",
+          leastPrivilege: "yes",
+          lifecycle: "yes",
+          serviceAccounts: "yes",
+          serviceCount: "2",
+          serviceUse: "Benefits SaaS synchronization and payroll import",
+          staticSecrets: "yes",
+          sharedService: "no",
+          machineLeastPrivilege: "yes",
+          machineLogging: "no",
+          apiKeys: "yes",
+          certificates: "yes",
+          sessionControls: "yes",
+          appAuthorization: "yes",
+          rateLimit: "no",
+          thirdParty: "yes",
+          thirdPartyTypes: ["SaaS", "Cloud provider"],
+          supplierData: "yes",
+          supplierAdmin: "yes",
+          supplierReview: "no",
+          exitPlan: "no",
+          webExposure: "yes",
+          apiExposure: "yes",
+          vpn: "yes",
+          ztna: "no",
+          remoteAdmin: "yes",
+          contractorAccess: "yes",
+          timeBoundAccess: "no",
+          unmanaged: "no",
+          byod: "no",
+          internetInternal: "no",
+          reverseProxy: "yes",
+          waf: "yes",
+          bastion: "no",
+          edr: "yes",
+          adminWorkstation: "no",
+          administrators:
+            "Internal platform team and contracted support partner",
+          dedicatedAdmin: "yes",
+          adminMfa: "no",
+          pam: "no",
+          sharedAdmin: "no",
+          directAdmin: "yes",
+          adminLogs: "yes",
+          breakGlass: "yes",
+          jit: "no",
+          secrets: "yes",
+          applicationPasswords: "yes",
+          tokens: "yes",
+          privateKeys: "no",
+          serviceCredentials: "yes",
+          sourceSecrets: "no",
+          configSecrets: "yes",
+          vault: "no",
+          rotation: "no",
+          shortLived: "no",
+          secretStorage: "Configuration file",
+          backups: "yes",
+          dr: "no",
+          redundancy: "yes",
+          ha: "yes",
+          criticalDependencies: "yes",
+          dependencies: "Entra ID, Azure SQL and Benefits SaaS",
+          rpo: "4 hours",
+          rto: "8 hours",
+          recoveryAligned: "yes",
+          immutable: "no",
+          backupIsolated: "no",
+          restoreTest: "no",
+          degraded: "no",
+          appLogs: "yes",
+          authLogs: "yes",
+          securityLogs: "yes",
+          centralLogs: "no",
+          siem: "no",
+          alerts: "no",
+          logRetention: "30 days",
+          retentionAdequate: "no",
+          timeSync: "yes",
+          vulnManagement: "yes",
+          ai: "no",
+        });
+        state.flows = [
+          {
+            source: "Employee browser",
+            destination: "Azure application gateway",
+            protocol: "HTTPS / 443",
+            dataType: "Personal employee data",
+            authentication: "OAuth 2.0",
+            encryption: "Yes",
+            comment: "Entra ID SSO + MFA for human users.",
+          },
+          {
+            source: "People Hub API",
+            destination: "Benefits SaaS",
+            protocol: "HTTPS / 443",
+            dataType: "Employee benefits records",
+            authentication: "API key",
+            encryption: "Yes",
+            comment: "Static integration key, manually deployed.",
+          },
+        ];
+        state.thirdParties = [
+          {
+            name: "Benefits SaaS provider",
+            function: "Employee benefits enrollment",
+            data: "Employee identity and benefits selection",
+            access: "API integration",
+            privilege: "Standard",
+            location: "EU",
+            dependency: "High",
+            comment: "Contract and exit plan require review.",
+          },
+          {
+            name: "Platform support partner",
+            function: "Operational support",
+            data: "Production HR platform",
+            access: "Remote administrator",
+            privilege: "Privileged / admin",
+            location: "EU",
+            dependency: "Medium",
+            comment: "Named support staff; no administrator MFA yet.",
+          },
+        ];
+        state.dataTypes = [
+          {
+            name: "Employee and payroll records",
+            location: "Azure SQL · West Europe",
+            volume: "2,400 employees",
+            retention: "Employment + 5 years",
+            confidentiality: "High",
+            integrity: "High",
+            availability: "High",
+            traceability: "High",
+          },
+        ];
+        state.decisions["SVC-001"] = {
+          status: "Applicable",
+          severity: "High",
+          comments:
+            "Confirmed during integration design review. Replace the configuration-file secret before production.",
+        };
+        state.actions["SVC-001::1"] = {
+          selected: true,
+          status: "To Do",
+          owner: "Platform Engineering",
+          due: "",
+          comment: "Evaluate managed identity with the provider.",
+        };
+        state.actions["SVC-001::2"] = {
+          selected: true,
+          status: "In Progress",
+          owner: "Integration Team",
+          due: "",
+          comment: "Designing the rotation and deployment sequence.",
+        };
+        state.decisions["REM-001"] = {
+          status: "Applicable",
+          severity: "Critical",
+          comments:
+            "Remote support path currently uses password-only privileged authentication.",
+        };
+        state.actions["REM-001::0"] = {
+          selected: true,
+          status: "To Do",
+          owner: "Identity Team",
+          due: "",
+          comment: "Required before production access is granted.",
+        };
+        Object.assign(ui, {
+          view: "risks",
+          riskSearch: "",
+          riskFamily: "",
+          riskSeverity: "",
+          riskStatus: "",
+          showHidden: false,
+        });
+        changed(true);
+        toast(
+          "Demo loaded · findings are based on the recorded project facts.",
+        );
+      }
+      /* 8. Event handling. Inputs update state without losing editing focus. */
+      document.addEventListener("input", (event) => {
+        const el = event.target;
+        if (
+          el.dataset.answer &&
+          ["text", "textarea"].includes(fieldIndex[el.dataset.answer]?.type)
+        ) {
+          state.answers[el.dataset.answer] = el.value;
+          changed(false);
+        }
+        if (
+          el.dataset.filter &&
+          el.type !== "checkbox" &&
+          el.tagName !== "SELECT"
+        ) {
+          ui[el.dataset.filter] = el.value;
+          resetFilterPage(el.dataset.filter);
+          refreshResults();
+        }
+        if (el.dataset.decision === "comments") {
+          state.decisions[el.dataset.riskId] = {
+            ...(state.decisions[el.dataset.riskId] || {}),
+            comments: el.value,
+          };
+          changed(false);
+        }
+        if (
+          el.dataset.actionField &&
+          ["owner", "due", "comment"].includes(el.dataset.actionField)
+        ) {
+          setAction(el.dataset.actionKey, el.dataset.actionField, el.value);
+        }
+      });
+      document.addEventListener("change", (event) => {
+        const el = event.target;
+        if (el.dataset.answer) {
+          const key = el.dataset.answer,
+            f = fieldIndex[key];
+          if (f.type === "multi") {
+            const values = new Set(state.answers[key] || []);
+            el.checked ? values.add(el.value) : values.delete(el.value);
+            state.answers[key] = [...values];
+          } else state.answers[key] = el.value;
+          changed(!["text", "textarea"].includes(f.type));
+        }
+        if (
+          el.dataset.filter &&
+          (el.type === "checkbox" || el.tagName === "SELECT")
+        ) {
+          ui[el.dataset.filter] =
+            el.type === "checkbox" ? el.checked : el.value;
+          resetFilterPage(el.dataset.filter);
+          refreshResults();
+        }
+        if (el.dataset.decision && el.dataset.decision !== "comments") {
+          setDecision(el.dataset.riskId, el.dataset.decision, el.value);
+        }
+        if (el.dataset.actionField) {
+          setAction(
+            el.dataset.actionKey,
+            el.dataset.actionField,
+            el.type === "checkbox" ? el.checked : el.value,
+          );
+          if (ui.view === "actions" && el.tagName === "SELECT") {
+            render();
+          }
+        }
+      });
+      document.addEventListener("click", (event) => {
+        const b = event.target.closest("button");
+        if (!b) return;
+        if (b.dataset.view) {
+          ui.view = b.dataset.view;
+          render();
+          window.scrollTo(0, 0);
+        }
+        if (b.dataset.section) {
+          ui.section = b.dataset.section;
+          render();
+          window.scrollTo(0, 0);
+        }
+        if (own(b.dataset, "family")) {
+          ui.riskFamily = b.dataset.family;
+          ui.riskPage = 1;
+          render();
+        }
+        if (b.dataset.listPage) {
+          ui[b.dataset.listPage + "Page"] = Number(b.dataset.page);
+          refreshResults();
+          $("#main").scrollIntoView({ behavior: "instant" });
+        }
+        if (b.dataset.risk) openRisk(b.dataset.risk);
+        if (b.hasAttribute("data-close")) closeDialog();
+        if (b.dataset.addRecord) openRecord(b.dataset.addRecord);
+        if (b.dataset.editRecord)
+          openRecord(b.dataset.editRecord, Number(b.dataset.index));
+        if (b.dataset.deleteRecord) {
+          const collection = collectionFor[b.dataset.deleteRecord];
+          state[collection].splice(Number(b.dataset.index), 1);
+          closeDialog();
+          changed(true);
+          toast("Record deleted.");
+        }
+        if (b.dataset.suppress) {
+          setDecision(b.dataset.suppress, "hidden", b.dataset.value === "true");
+          closeDialog();
+          toast(
+            b.dataset.value === "true"
+              ? "Risk suppressed. Use Show suppressed to restore it."
+              : "Risk restored.",
+          );
+        }
+        if (b.dataset.removeAction) {
+          setAction(b.dataset.removeAction, "selected", false);
+          render();
+          toast(
+            "Recommendation removed from the plan. Its details are preserved.",
+          );
+        }
+        if (b.dataset.useTemplate) {
+          const t = state.customCatalog.find(
+            (t) => t.id === b.dataset.useTemplate,
+          );
+          if (t) {
+            if (!state.manualRisks.some((r) => r.id === t.id))
+              state.manualRisks.push({ ...t });
+            changed(true);
+            toast("Custom risk added to the assessment.");
+          }
+        }
+        if (b.dataset.confirm) {
+          const cmd = b.dataset.confirm;
+          closeDialog();
+          if (cmd === "demo") loadDemo();
+          if (cmd === "reset") {
+            state = blankState();
+            ui.view = "qualification";
+            ui.section = "general";
+            clearFilters();
+            changed(true);
+            toast("New assessment started.");
+          }
+          if (cmd === "import" && pendingImport) {
+            state = pendingImport;
+            pendingImport = null;
+            clearFilters();
+            ui.view = "qualification";
+            ui.section = "general";
+            changed(true);
+            toast("Project imported and saved locally.");
+          }
+        }
+        const command = b.dataset.command;
+        if (command === "demo")
+          confirmAction(
+            "Load the demo project?",
+            "This replaces the current assessment with a realistic HR platform scenario. Export your work first if you need a backup.",
+            "demo",
+            "Load Demo",
+          );
+        if (command === "manual-risk") openManualRisk();
+        if (command === "custom-template") openManualRisk(true);
+        if (command === "component") openComponent();
+        if (command === "analyze") {
+          ui.view = "risks";
+          render();
+          window.scrollTo(0, 0);
+        }
+        if (command === "qualify") {
+          ui.view = "qualification";
+          render();
+        }
+        if (command === "action-plan") {
+          ui.view = "actions";
+          render();
+        }
+        if (command === "print") printReport();
+        if (command === "clear-risk-filters") {
+          Object.assign(ui, {
+            riskPage: 1,
+            riskSearch: "",
+            riskFamily: "",
+            riskSeverity: "",
+            riskStatus: "",
+            showHidden: false,
+          });
+          render();
+        }
+        if (command === "clear-action-filters") {
+          Object.assign(ui, {
+            actionSearch: "",
+            actionFamily: "",
+            actionSeverity: "",
+            actionStatus: "",
+            actionOwner: "",
+          });
+          render();
+        }
+      });
+      document.addEventListener("submit", (event) => {
+        const form = event.target;
+        if (!["record-form", "manual-form", "component-form"].includes(form.id))
+          return;
+        event.preventDefault();
+        const data = new FormData(form);
+        if (form.id === "record-form") {
+          const type = form.dataset.type,
+            collection = collectionFor[type],
+            record = Object.fromEntries(
+              recordFields[type].map(([key]) => [
+                key,
+                safeText(data.get(key), 3000).trim(),
+              ]),
+            );
+          if (own(form.dataset, "index"))
+            state[collection][Number(form.dataset.index)] = record;
+          else state[collection].push(record);
+          if (type === "flow") state.answers.network = "yes";
+          if (type === "thirdParty") state.answers.thirdParty = "yes";
+          if (type === "dataType") state.answers.data = "yes";
+        }
+        if (form.id === "component-form") {
+          const name = data.get("name").trim();
+          if (!name) return;
+          if (![...COMPONENTS, ...state.componentsCustom].includes(name))
+            state.componentsCustom.push(name);
+          state.answers.components = [
+            ...new Set([...(state.answers.components || []), name]),
+          ];
+        }
+        if (form.id === "manual-form") {
+          const recommendations = data
+            .get("recommendations")
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .slice(0, 30);
+          if (!recommendations.length) {
+            toast("Enter at least one recommendation.");
+            return;
+          }
+          const risk = {
+            id: uuid(),
+            title: data.get("title").trim(),
+            severity: data.get("severity"),
+            family: data.get("customFamily").trim() || data.get("family"),
+            description: data.get("description").trim(),
+            justification: data.get("justification").trim(),
+            recommendations,
+            tags: ["Custom"],
+          };
+          if (!risk.title || !risk.description || !risk.justification) {
+            toast("Please complete the required risk details.");
+            return;
+          }
+          if (form.dataset.library === "true") state.customCatalog.push(risk);
+          else state.manualRisks.push(risk);
+        }
+        closeDialog();
+        changed(true);
+        toast("Saved to the assessment.");
+      });
+      function clearFilters() {
+        Object.assign(ui, {
+          riskPage: 1,
+          libraryPage: 1,
+          riskSearch: "",
+          riskFamily: "",
+          riskSeverity: "",
+          riskStatus: "",
+          showHidden: false,
+          actionSearch: "",
+          actionFamily: "",
+          actionSeverity: "",
+          actionStatus: "",
+          actionOwner: "",
+          librarySearch: "",
+          libraryFamily: "",
+        });
+      }
+      $("#save-btn").addEventListener("click", () => saveLocal(true));
+      $("#load-btn").addEventListener("click", () => $("#import-file").click());
+      $("#import-file").addEventListener("change", (e) => {
+        importProject(e.target.files[0]);
+        e.target.value = "";
+      });
+      $("#reset-btn").addEventListener("click", () =>
+        confirmAction(
+          "Start a new assessment?",
+          "This clears the current assessment in this browser. Export a JSON backup first to preserve your work.",
+          "reset",
+          "Reset Assessment",
+        ),
+      );
+      $("#export-btn").addEventListener("click", () => {
+        const menu = $("#export-menu");
+        menu.hidden = !menu.hidden;
+        $("#export-btn").setAttribute("aria-expanded", String(!menu.hidden));
+      });
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".export-wrap")) {
+          $("#export-menu").hidden = true;
+          $("#export-btn").setAttribute("aria-expanded", "false");
+        }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          $("#export-menu").hidden = true;
+          $("#export-btn").setAttribute("aria-expanded", "false");
+        }
+      });
+      $("#json-btn").addEventListener("click", () => {
+        exportProject();
+        $("#export-menu").hidden = true;
+        $("#export-btn").setAttribute("aria-expanded", "false");
+      });
+      $("#report-btn").addEventListener("click", () => {
+        $("#export-menu").hidden = true;
+        $("#export-btn").setAttribute("aria-expanded", "false");
+        printReport();
+      });
+      $("#dialog").addEventListener("click", (e) => {
+        if (e.target === $("#dialog")) {
+          const r = e.target.getBoundingClientRect();
+          if (
+            e.clientX < r.left ||
+            e.clientX > r.right ||
+            e.clientY < r.top ||
+            e.clientY > r.bottom
+          )
+            closeDialog();
+        }
+      });
+      window.addEventListener("beforeprint", buildReport);
+      window.addEventListener("pagehide", () => {
+        if (saveTimer) saveLocal(false);
+      });
+      restoreLocal();
+      populateIcons();
+      render();
+    </script>
+  </body>
+</html>
