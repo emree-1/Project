@@ -418,6 +418,11 @@
         flex-wrap: wrap;
         overflow-x: visible;
       }
+      .technical-tabs button { display: inline-flex; align-items: center; gap: 8px; }
+      .technical-tabs .topic-status { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; white-space: nowrap; }
+      .topic-status.complete { color: #17633b; }
+      .topic-status.incomplete { color: #805300; }
+      .topic-status.out-of-scope { color: #65787d; }
       .workspace-content {
         padding: 0 var(--space-6) var(--space-6);
       }
@@ -2666,11 +2671,13 @@
         align-items: flex-start;
       }
       .component-card {
-        padding: 17px 20px;
+        padding: 14px 16px;
         gap: 12px;
         background: #f3f8f7;
         border: 1px solid #d4e5e1;
+        border-radius: 10px;
       }
+      .component-card:hover { background: #eaf5f2; border-color: #90bdb4; }
       .component-card svg {
         color: #287672;
       }
@@ -2738,6 +2745,12 @@
       .asset-facts > div { min-width: 0; }
       .asset-facts dt { color: var(--muted); font-size: 11px; }
       .asset-facts dd { margin: 2px 0 0; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+      .asset-encryption { display: inline-flex; align-items: center; gap: 6px; background: transparent !important; padding: 0; }
+      .asset-encryption.answer-yes { color: #17633b; }
+      .asset-encryption.answer-no { color: #a12c2c; }
+      .asset-encryption.answer-tbd { color: #805300; }
+      .asset-encryption.answer-na { color: #50616a; }
+      .asset-encryption .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
       .asset-add-card { min-height: 0; padding: 20px; border: 1px dashed #91b9af; border-radius: 12px; background: #f8fbfa; color: var(--teal); justify-content: center; }
       .asset-add-card:hover { background: #eaf5f2; border-color: #287672; }
       @media (max-width: 520px) { .asset-card .asset-facts { grid-template-columns: 1fr; } }
@@ -3406,16 +3419,15 @@
       .component-card {
         align-items: flex-start;
         text-align: left;
-        max-width: 330px;
       }
       .component-cards > .component-card,
       .component-cards > .collection-add-item {
-        flex: 0 1 280px;
-        width: min(100%, 280px);
-        max-width: 330px;
-        min-width: 0;
+        flex: 0 1 auto;
+        width: fit-content;
+        max-width: 340px;
+        min-width: 150px;
         min-height: 0;
-        padding: 17px 20px;
+        padding: 14px 16px;
         align-self: flex-start;
       }
       .description-preview {
@@ -3544,8 +3556,8 @@
         padding-top: 26px;
       }
       .collection-add-item {
-        min-height: 57px;
-        min-width: 170px;
+        min-height: 0;
+        min-width: 150px;
         border: 1px dashed #9dbfba;
         border-radius: 8px;
         background: #f8fbfa;
@@ -3554,7 +3566,7 @@
         align-items: center;
         justify-content: flex-start;
         gap: 10px;
-        padding: 17px 20px;
+        padding: 14px 16px;
         text-align: left;
         font-weight: 600;
       }
@@ -3657,11 +3669,20 @@
         text-align: left;
       }
       .working-table .row-actions {
-        width: 82px;
+        width: 72px;
+        white-space: nowrap;
       }
-      .working-table .row-actions button {
-        padding: 5px 3px;
-        font-size: 11px;
+      .working-table .row-actions .icon-action {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        color: var(--muted);
+      }
+      .working-table .row-actions .icon-action svg { width: 16px; height: 16px; }
+      .working-table .row-actions .delete-action:hover,
+      .working-table .row-actions .delete-action:focus-visible {
+        color: var(--critical);
+        background: #fcebea;
       }
       .working-table input,
       .working-table select {
@@ -3688,6 +3709,17 @@
       .working-table input::placeholder {
         color: #9daeb0;
       }
+      .working-table select.answer-yes { background: #e8f5ed; color: #17633b; }
+      .working-table select.answer-no { background: #fcebea; color: #a12c2c; }
+      .working-table select.answer-tbd { background: #fff3db; color: #805300; }
+      .working-table select.answer-na { background: #eef1f2; color: #50616a; }
+      .inline-multi { position: relative; font-size: 12px; }
+      .inline-multi summary { cursor: pointer; padding: 8px 5px; border-radius: 5px; list-style: none; }
+      .inline-multi summary::-webkit-details-marker { display: none; }
+      .inline-multi summary:hover, .inline-multi[open] summary { background: #f1f6f5; }
+      .inline-multi-menu { position: fixed; z-index: 1000; min-width: 190px; max-height: 260px; overflow: auto; padding: 8px; background: white; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 24px #17353c22; }
+      .inline-multi-menu label { display: flex; align-items: center; gap: 8px; padding: 5px; white-space: nowrap; }
+      .inline-multi-menu input { width: auto; }
       .row-documentation {
         display: block;
         font-size: 10px;
@@ -10733,7 +10765,7 @@
             : key === "flows"
               ? "flow"
               : "supplier";
-        target.innerHTML = `<div class="compact-scroll"><table class="compact-table working-table ${prefs.advanced ? "expanded-columns" : ""}"><thead><tr>${headers.map(([field, label]) => `<th scope="col"><button data-table-sort="${key}" data-column="${field}">${esc(label)}${prefs.sort === field ? (prefs.direction === 1 ? " ↑" : " ↓") : ""}</button></th>`).join("")}<th scope="col" class="row-actions">Actions</th></tr></thead><tbody>${rows.map((row) => `<tr class="clickable-row" tabindex="0" data-inventory-row="${esc(row.id)}" data-row-kind="${key}" aria-label="Open ${esc(rowLabel(key, row))} details">${headers.map(([field, label], index) => `<td>${inlineInventoryCell(key, row, field, label)}${index === 0 ? `<small class="row-documentation" data-row-progress="${esc(row.id)}">${inlineRowStatus(key, row)}</small>` : ""}</td>`).join("")}<td class="row-actions"><button class="quiet small" data-detail="${key}" data-id="${esc(row.id)}" aria-label="Open ${esc(rowLabel(key, row))}">Open</button><button type="button" class="quiet small danger" data-inventory-delete="${key}" data-id="${esc(row.id)}" aria-label="Delete ${esc(rowLabel(key, row))}" title="Delete ${esc(rowLabel(key, row))}">Delete</button></td></tr>`).join("")}${!rows.length ? `<tr><td colspan="${headers.length + 1}" class="table-empty">${state[key].length ? "No records match the current search or filter." : key === "flows" ? "No flows documented. Add an application, API or infrastructure communication to assess network exposure and authentication." : key === "profiles" ? "No user populations documented. Add people or technical identities to assess access controls." : "No suppliers documented. Add third parties to assess dependencies and access."}</td></tr>` : ""}<tr class="inventory-add-row"><td colspan="${headers.length + 1}"><div class="add-row-actions"><button type="button" data-inventory-add="${key}" class="add-row-button" aria-label="Add ${addLabel}">${icon("plus")} Add ${!state[key].length ? "first " : ""}${addLabel}</button><button type="button" class="quiet small" data-inventory-templates="${key}" aria-label="${addLabel} templates">Templates ▾</button></div></td></tr></tbody></table></div>${inventoryDatalists(key)}${count > 10 ? `<div class="inventory-pagination"><small>${count} records · Page ${prefs.page} of ${Math.ceil(count / 10)}</small><div class="actions"><button class="small quiet" data-table-page="${key}" data-page="${prefs.page - 1}" ${prefs.page === 1 ? "disabled" : ""}>Previous</button><button class="small quiet" data-table-page="${key}" data-page="${prefs.page + 1}" ${prefs.page * 10 >= count ? "disabled" : ""}>Next</button></div></div>` : ""}`;
+        target.innerHTML = `<div class="compact-scroll"><table class="compact-table working-table ${prefs.advanced ? "expanded-columns" : ""}"><thead><tr>${headers.map(([field, label]) => `<th scope="col"><button data-table-sort="${key}" data-column="${field}">${esc(label)}${prefs.sort === field ? (prefs.direction === 1 ? " ↑" : " ↓") : ""}</button></th>`).join("")}<th scope="col" class="row-actions">Actions</th></tr></thead><tbody>${rows.map((row) => `<tr class="clickable-row" tabindex="0" data-inventory-row="${esc(row.id)}" data-row-kind="${key}" aria-label="Open ${esc(rowLabel(key, row))} details">${headers.map(([field, label], index) => `<td>${inlineInventoryCell(key, row, field, label)}${index === 0 ? `<small class="row-documentation" data-row-progress="${esc(row.id)}">${inlineRowStatus(key, row)}</small>` : ""}</td>`).join("")}<td class="row-actions"><button type="button" class="quiet icon-action" data-detail="${key}" data-id="${esc(row.id)}" aria-label="Edit ${esc(rowLabel(key, row))}" title="Edit ${esc(rowLabel(key, row))}">${icon("edit")}</button><button type="button" class="quiet icon-action delete-action" data-inventory-delete="${key}" data-id="${esc(row.id)}" aria-label="Delete ${esc(rowLabel(key, row))}" title="Delete ${esc(rowLabel(key, row))}">${icon("trash")}</button></td></tr>`).join("")}${!rows.length ? `<tr><td colspan="${headers.length + 1}" class="table-empty">${state[key].length ? "No records match the current search or filter." : key === "flows" ? "No flows documented. Add an application, API or infrastructure communication to assess network exposure and authentication." : key === "profiles" ? "No user populations documented. Add people or technical identities to assess access controls." : "No suppliers documented. Add third parties to assess dependencies and access."}</td></tr>` : ""}<tr class="inventory-add-row"><td colspan="${headers.length + 1}"><div class="add-row-actions"><button type="button" data-inventory-add="${key}" class="add-row-button" aria-label="Add ${addLabel}">${icon("plus")} Add ${!state[key].length ? "first " : ""}${addLabel}</button><button type="button" class="quiet small" data-inventory-templates="${key}" aria-label="${addLabel} templates">Templates ▾</button></div></td></tr></tbody></table></div>${inventoryDatalists(key)}${count > 10 ? `<div class="inventory-pagination"><small>${count} records · Page ${prefs.page} of ${Math.ceil(count / 10)}</small><div class="actions"><button class="small quiet" data-table-page="${key}" data-page="${prefs.page - 1}" ${prefs.page === 1 ? "disabled" : ""}>Previous</button><button class="small quiet" data-table-page="${key}" data-page="${prefs.page + 1}" ${prefs.page * 10 >= count ? "disabled" : ""}>Next</button></div></div>` : ""}`;
       }
 
       function addInventoryRow(key, sourceId = "") {
@@ -10827,20 +10859,33 @@
           el.textContent = stageState(
             STAGES.find((s) => s.id === el.dataset.stageState),
           );
+        for (const el of document.querySelectorAll("[data-topic-status]")) {
+          const status = technicalTopicStatus(el.dataset.topicStatus);
+          el.className = `topic-status ${status.state}`;
+          el.setAttribute("aria-label", `${TECHNICAL_TABS.find(([id]) => id === el.dataset.topicStatus)?.[1]}: ${status.label}`);
+          el.innerHTML = `<span aria-hidden="true">${status.state === "complete" ? "✓" : status.state === "out-of-scope" ? "—" : "●"}</span> ${status.label}`;
+        }
       }
-      function subTabState(id) {
-        if (id === "data")
-          return `${state.dataTypes.length} assets${state.dataTypes.some((d) => [d.classification, d.volume, d.nature].some(uncertain)) ? " · TBD" : ""}`;
-        if (id === "architecture")
-          return `${componentRecords(state).length} components`;
-        if (id === "iam") return inventoryStateLabel("profiles");
-        if (id === "flows") return inventoryStateLabel("flows");
-        if (id === "thirdParties") return inventoryStateLabel("thirdParties");
-        if (id === "ai" && state.answers.ai === "no") return "Out of scope";
-        return "";
+      function technicalTopicStatus(id, s = state) {
+        const outOfScope = {
+          data: s.answers.data === "no",
+          iam: s.answers.identities === "no",
+          flows: s.answers.network === "no",
+          thirdParties: s.answers.thirdParty === "no",
+          ai: s.answers.ai === "no",
+        }[id];
+        if (outOfScope) return { state: "out-of-scope", label: "Out of scope" };
+        const sections = id === "iam" ? ["identity", "administration", "secrets"] : [TECHNICAL_TAB_SECTIONS[id]];
+        const requirements = sections.flatMap((section) => sectionRequirements(section, s));
+        return requirements.every((r) => documented(r.value))
+          ? { state: "complete", label: "Complete" }
+          : { state: "incomplete", label: "To complete" };
       }
       function renderSubTabs(stageId, tabs, active) {
-        return `<div class="sub-tabs ${stageId === "technical" ? "technical-tabs" : ""}" role="tablist" aria-label="${esc(STAGES.find((s) => s.id === stageId)?.title || "Workspace")}">${tabs.map(([id, label]) => `<button type="button" role="tab" data-local-tab="${id}" data-tab-stage="${stageId}" aria-selected="${active === id}" ${active === id ? 'aria-current="page"' : ""} class="${active === id ? "active" : ""}">${esc(label)}${subTabState(id) ? `<small>${esc(subTabState(id))}</small>` : ""}</button>`).join("")}</div>`;
+        return `<div class="sub-tabs ${stageId === "technical" ? "technical-tabs" : ""}" role="tablist" aria-label="${esc(STAGES.find((s) => s.id === stageId)?.title || "Workspace")}">${tabs.map(([id, label]) => {
+          const status = stageId === "technical" ? technicalTopicStatus(id) : null;
+          return `<button type="button" role="tab" data-local-tab="${id}" data-tab-stage="${stageId}" aria-selected="${active === id}" ${active === id ? 'aria-current="page"' : ""} class="${active === id ? "active" : ""}">${esc(label)}${status ? `<small class="topic-status ${status.state}" data-topic-status="${id}" aria-label="${esc(label)}: ${status.label}"><span aria-hidden="true">${status.state === "complete" ? "✓" : status.state === "out-of-scope" ? "—" : "●"}</span> ${status.label}</small>` : ""}</button>`;
+        }).join("")}</div>`;
       }
       function qualificationWorkspace(id, title, description, content) {
         return `<section class="qualification-workspace" data-topic="${id}"><header class="workspace-header"><h2>${esc(title)}</h2><p>${esc(description)}</p></header><div class="workspace-content">${content}</div></section>`;
@@ -11100,7 +11145,6 @@
         actionStatus: "",
         actionReview: "",
         actionMore: false,
-        riskMore: false,
         librarySearch: "",
         libraryFamily: "",
       };
@@ -11266,9 +11310,55 @@
         settings:
           "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z M12 2v3 M12 19v3 M4.9 4.9 7 7 M17 17l2.1 2.1 M2 12h3 M19 12h3 M4.9 19.1 7 17 M17 7l2.1-2.1",
         alert: "M12 3 2 21h20L12 3Z M12 9v5 M12 18h.01",
+        browser: "M3 4h18v16H3V4Z M3 9h18 M6 6h.01 M9 6h.01 M12 6h.01",
+        desktop: "M3 4h18v13H3V4Z M8 21h8 M12 17v4",
+        mobile: "M7 2h10v20H7V2Z M11 18h2",
+        api: "m8 7-5 5 5 5 M16 7l5 5-5 5 M14 4l-4 16",
+        server: "M4 3h16v7H4V3Z M4 14h16v7H4v-7Z M7 7h.01 M7 18h.01 M11 7h6 M11 18h6",
+        vm: "M3 3h18v15H3V3Z M8 22h8 M12 18v4 M8 7h8v7H8V7Z",
+        container: "M3 7l9-4 9 4v10l-9 4-9-4V7Z M3 7l9 4 9-4 M12 11v10",
+        cluster: "M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z M5 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z M19 17a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z M12 7v5 M12 12l-7 5 M12 12l7 5",
+        cloud: "M7 19h12a4 4 0 0 0 0-8h-1a6 6 0 0 0-11-2 5 5 0 0 0 0 10Z",
+        cloudInfra: "M4 17h16a3 3 0 0 0-1-6 6 6 0 0 0-11-2 4 4 0 0 0-4 8Z M9 17v3 M15 17v3 M7 20h10",
+        directory: "M12 3v5 M5 12h14 M5 12v5 M19 12v5 M12 8v4 M3 17h4v4H3v-4Z M17 17h4v4h-4v-4Z M10 12h4v4h-4v-4Z",
+        identity: "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M2 21v-3a7 7 0 0 1 14 0v3H2Z M18 9a3 3 0 1 0 0 6 M18 12h4 M21 12v3",
+        proxy: "M3 7h17 m-4-4 4 4-4 4 M21 17H4 m4-4-4 4 4 4",
+        waf: "M12 2 4 5v7c0 5 8 10 8 10s8-5 8-10V5l-8-3Z M8 10h8 M8 14h8 M10 10v4 M14 10v4",
+        balance: "M12 3v6 M12 9H5v5 M12 9h7v5 M3 14h4v5H3v-5Z M17 14h4v5h-4v-5Z",
+        firewall: "M12 2 4 5v7c0 5 8 10 8 10s8-5 8-10V5l-8-3Z M8 9h8 M8 13h8 M11 9v4 M14 13v4",
+        network: "M3 4h7v5H3V4Z M14 4h7v5h-7V4Z M8 16h8v5H8v-5Z M6 9v4h12V9 M12 13v3",
+        backup: "M4 7v5h5 M5 12a7 7 0 1 1 2 6 M12 8v5l3 2",
+        monitor: "M3 12h4l2-5 4 10 2-5h6 M3 20h18",
+        edit: "M4 20h4l12-12-4-4L4 16v4Z M14 6l4 4",
+        trash: "M4 7h16 M9 7V4h6v3 M6 7l1 14h10l1-14 M10 11v6 M14 11v6",
       };
       function icon(name) {
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${iconPaths[name] || iconPaths.shield}"/></svg>`;
+      }
+      function componentIconName(component) {
+        const label = `${component.name || ""} ${component.kind || ""}`.toLowerCase();
+        if (/kubernetes|k8s|cluster/.test(label)) return "cluster";
+        if (/waf|web application firewall/.test(label)) return "waf";
+        if (/firewall/.test(label)) return "firewall";
+        if (/reverse proxy|ingress proxy/.test(label)) return "proxy";
+        if (/load balan/.test(label)) return "balance";
+        if (/entra|identity provider|identity platform|single sign.on|sso/.test(label)) return "identity";
+        if (/active directory|ldap|directory service/.test(label)) return "directory";
+        if (/backup|archive|restore/.test(label)) return "backup";
+        if (/monitor|observab|telemetry|logging/.test(label)) return "monitor";
+        if (/postgres|mysql|mariadb|oracle db|database|\bsql\b|\bdb\b/.test(label)) return "database";
+        if (/file stor|object stor|file share|\bnas\b|\bdrive\b/.test(label)) return "folder";
+        if (/saas|software as a service/.test(label)) return "cloud";
+        if (/iaas|paas|cloud infra/.test(label)) return "cloudInfra";
+        if (/virtual machine|\bvm\b|hypervisor/.test(label)) return "vm";
+        if (/container|docker/.test(label)) return "container";
+        if (/mobile|smartphone|\bios\b|android/.test(label)) return "mobile";
+        if (/desktop|workstation|thick client/.test(label)) return "desktop";
+        if (/web app|website|portal|frontend|front.end/.test(label)) return "browser";
+        if (/\bapi\b|rest service|graphql|endpoint/.test(label)) return "api";
+        if (/server|\biis\b|tomcat/.test(label)) return "server";
+        if (/network device|switch|router/.test(label)) return "network";
+        return "layers";
       }
       function populateIcons() {
         document.querySelectorAll("[data-icon]").forEach((el) => {
@@ -11459,7 +11549,7 @@
             `<button class="quiet" data-command="manual-risk">Add Risk</button>`,
           ) +
           `<div class="kpi-strip" aria-label="Risk summary"><strong>${visible.length} Risks</strong><span>${visible.filter((r) => r.severity === "Critical").length} Critical</span><span>${visible.filter((r) => r.severity === "High").length} High</span><span>${visible.filter((r) => r.status === TBD).length} TBD</span></div>` +
-          `<section class="panel"><div class="filters primary-filters"><input aria-label="Search risks" placeholder="Search risks or evidence…" data-filter="riskSearch" value="${esc(ui.riskSearch)}"><select aria-label="Filter risk severity" data-filter="riskSeverity">${options(SEVERITIES, ui.riskSeverity, "All severities")}</select><select aria-label="Filter risk status" data-filter="riskStatus">${options(RISK_STATUSES, ui.riskStatus, "All statuses")}</select><button class="quiet small" data-toggle-filter="risk">${ui.riskMore ? "Fewer" : "More"} Filters</button></div><div class="filters secondary-filters" ${ui.riskMore ? "" : "hidden"}><select aria-label="Filter risk family" data-filter="riskFamily">${options(familiesOf(risks), ui.riskFamily, "All families")}</select><label><input type="checkbox" data-filter="showHidden" ${ui.showHidden ? "checked" : ""}>Show suppressed</label></div><div id="risk-results"></div></section>`
+          `<section class="panel"><div class="filters primary-filters"><input aria-label="Search risks" placeholder="Search risks or evidence…" data-filter="riskSearch" value="${esc(ui.riskSearch)}"><select aria-label="Filter risk severity" data-filter="riskSeverity">${options(SEVERITIES, ui.riskSeverity, "All severities")}</select><select aria-label="Filter risk status" data-filter="riskStatus">${options(RISK_STATUSES, ui.riskStatus, "All statuses")}</select><select aria-label="Filter risk family" data-filter="riskFamily">${options(familiesOf(risks), ui.riskFamily, "All families")}</select><label class="filter-toggle"><input type="checkbox" data-filter="showHidden" ${ui.showHidden ? "checked" : ""}>Show suppressed</label><button class="quiet small" data-command="clear-risk-filters">${icon("close")}Clear filters</button></div><div id="risk-results"></div></section>`
         );
       }
       function resetFilterPage(key) {
@@ -13162,7 +13252,7 @@
         );
         if (
           !row ||
-          event.target.closest("button, input, select, textarea, label, a")
+          event.target.closest("button, input, select, textarea, label, a, summary, details")
         )
           return;
         if (row.dataset.inventoryRow)
@@ -14764,11 +14854,12 @@
       function architectureCard() {
         const values = componentRecords(state),
           conflicts = architectureExposureConflicts(state);
-        return `<section class="workspace-section"><div class="field-grid">${renderField(fieldIndex.environment)}${renderField(fieldIndex.internetExposure)}</div>${conflicts.length ? `<div class="callout warm"><p>${esc(exposureConflictTitle(state, conflicts))}</p><div class="actions">${conflicts.map((r) => `<button class="small" data-follow-link="inventory:flows:${esc(r.id)}">Review ${esc(r.id)}</button>`).join("")}</div></div>` : ""}<div class="list-header"><h3>Components</h3></div><div class="component-cards">${values.map((c) => `<button class="component-card" data-component-detail="${esc(c.id)}">${icon(/database|sql/i.test(c.name) ? "database" : "layers")}<span><strong>${esc(c.name)}</strong>${c.description ? `<small class="description-preview">${esc(previewText(c.description, 110))}</small>` : ""}</span></button>`).join("")}${collectionAddItem("Add Component", "data-component-picker")}</div><div class="architecture-comments">${renderField(fieldIndex.architectureNotes)}</div></section>`;
+        return `<section class="workspace-section"><div class="field-grid">${renderField(fieldIndex.environment)}${renderField(fieldIndex.internetExposure)}</div>${conflicts.length ? `<div class="callout warm"><p>${esc(exposureConflictTitle(state, conflicts))}</p><div class="actions">${conflicts.map((r) => `<button class="small" data-follow-link="inventory:flows:${esc(r.id)}">Review ${esc(r.id)}</button>`).join("")}</div></div>` : ""}<div class="list-header"><h3>Components</h3></div><div class="component-cards">${values.map((c) => `<button class="component-card" data-component-detail="${esc(c.id)}">${icon(componentIconName(c))}<span><strong>${esc(c.name)}</strong>${c.description ? `<small class="description-preview">${esc(previewText(c.description, 110))}</small>` : ""}</span></button>`).join("")}${collectionAddItem("Add Component", "data-component-picker")}</div><div class="architecture-comments">${renderField(fieldIndex.architectureNotes)}</div></section>`;
       }
       function dataCard() {
-        const fact = (label, value, semantic = false) => `<div><dt>${label}</dt><dd${semantic ? ` class="answer-state ${answerStateClass(value)}"` : ""}>${esc(value || "Not documented")}</dd></div>`;
-        const cards = state.dataTypes.map((d, i) => `<article class="asset-card clickable-row" role="button" tabindex="0" data-open-asset="${i}" aria-label="Open data asset ${esc(d.name)}"><h3>${esc(d.name)}</h3><p class="description-preview">${esc(previewText(d.description || "Data usage description not documented.", 160))}</p><dl class="asset-facts">${fact("Classification", d.classification)}${fact("Data Nature", d.nature)}${fact("Volume", d.volume)}${fact("Hosting", d.hostingLocation)}${fact("Encryption at Rest", d.encryptedAtRest, true)}</dl></article>`).join("");
+        const fact = (label, value) => `<div><dt>${label}</dt><dd>${esc(value || "Not documented")}</dd></div>`;
+        const encryptionFact = (value) => `<div><dt>Encryption at Rest</dt><dd class="asset-encryption ${answerStateClass(value)}"><span class="status-dot" aria-hidden="true"></span>${esc(value || "Not documented")}</dd></div>`;
+        const cards = state.dataTypes.map((d, i) => `<article class="asset-card clickable-row" role="button" tabindex="0" data-open-asset="${i}" aria-label="Open data asset ${esc(d.name)}"><h3>${esc(d.name)}</h3><p class="description-preview">${esc(previewText(d.description || "Data usage description not documented.", 160))}</p><dl class="asset-facts">${fact("Classification", d.classification)}${fact("Data Nature", d.nature)}${fact("Volume", d.volume)}${fact("Hosting", d.hostingLocation)}${encryptionFact(d.encryptedAtRest)}</dl></article>`).join("");
         return `<section class="workspace-section"><div class="asset-grid">${cards}<button type="button" class="asset-add-card" data-add-record="dataType">${icon("plus")} Add Data Asset</button></div>${!state.dataTypes.length ? `<button class="quiet small" data-no-data>${state.answers.data === "no" ? "✓ No data in scope" : "No data in scope"}</button>` : ""}</section>`;
       }
 
@@ -14994,9 +15085,19 @@
           `<button data-close>Cancel</button>`,
         );
       }
+      function inventoryClosedChoices(f) {
+        return !f.multi && f.options.length > 0 &&
+          !(f.options.every((v) => uncertain(v)) || f.key === "protocol");
+      }
+      function inventoryChoiceOptions(f, value) {
+        return options([...new Set([...f.options.map(canonicalAnswer), ...(value ? [canonicalAnswer(value)] : [])])], canonicalAnswer(value), "Select...");
+      }
       function inventoryFieldInput(key, row, f) {
         const focused = qualificationInventoryField(key, row, f);
         if (focused !== null) return focused;
+        const id = "detail-" + key + "-" + f.key;
+        if (inventoryClosedChoices(f))
+          return `<label class="field"><span class="field-label">${esc(f.label)}</span><select class="answer-state ${answerStateClass(row[f.key])}" id="${id}" name="${f.key}" data-draft-field="${f.key}">${inventoryChoiceOptions(f, row[f.key])}</select></label>`;
         let values = [...f.options];
         if (key === "flows" && ["source", "destination"].includes(f.key))
           values = [
@@ -15010,7 +15111,6 @@
           (key === "thirdParties" && f.key === "data")
         )
           values = [...values, ...state.dataTypes.map((d) => d.name)];
-        const id = "detail-" + key + "-" + f.key;
         const input = `<label class="field"><span class="field-label">${esc(f.label)}</span><input id="${id}" name="${f.key}" data-draft-field="${f.key}" value="${esc(row[f.key])}" maxlength="3000" ${values.length ? `list="${id}-choices"` : ""} placeholder="${f.required ? "Required · To Be Determined accepted" : "Not entered"}" autocomplete="off">${values.length ? `<datalist id="${id}-choices">${[...new Set(values)].map((v) => `<option value="${esc(v)}">`).join("")}</datalist>` : ""}</label>`;
         return (
           input +
@@ -17494,19 +17594,10 @@
         if (key === "profiles" && f.numeric)
           return `<label class="field"><span class="field-label">${esc(f.label)} · optional</span><input id="${id}" name="${f.key}" data-draft-field="${f.key}" type="number" min="0" max="1000000000" step="1" value="${esc(row[f.key])}" placeholder="Optional estimate"></label>`;
         if (
-          f.options === YN ||
-          (key === "profiles" &&
-            [
-              "type",
-              "origin",
-              "volumeRange",
-              "roleType",
-              "deviceType",
-              "deviceManagement",
-            ].includes(f.key))
+          inventoryClosedChoices(f)
         ) {
           const value = canonicalAnswer(row[f.key]);
-          return `<label class="field"><span class="field-label">${esc(f.label)}</span><select class="answer-state ${answerStateClass(value)}" id="${id}" name="${f.key}" data-draft-field="${f.key}">${options([...new Set([...f.options, ...(value ? [value] : [])])], value, "Select...")}</select></label>`;
+          return `<label class="field"><span class="field-label">${esc(f.label)}</span><select class="answer-state ${answerStateClass(value)}" id="${id}" name="${f.key}" data-draft-field="${f.key}">${inventoryChoiceOptions(f, value)}</select></label>`;
         }
         return null;
       }
@@ -18985,29 +19076,17 @@
         const f = INVENTORIES[key].fields.find((f) => f.key === field),
           value = f?.multi ? (row[field] || []).join(" + ") : row[field] || "",
           attr = `data-inventory="${key}" data-row-id="${esc(row.id)}" data-column="${field}" aria-label="${esc(label)} · ${esc(row.id)}"`;
-        const closed =
-          f?.options?.length &&
-          (f.options === YN ||
-            [
-              "type",
-              "volumeRange",
-              "roleType",
-              "origin",
-              "deviceManagement",
-              "dependency",
-              "serviceType",
-            ].includes(field));
-        if (closed)
-          return `<select class="answer-state ${answerStateClass(value)}" ${attr}>${options([...new Set([...f.options, ...(value ? [value] : [])])], value, "Select...")}</select>`;
+        if (f?.multi)
+          return `<details class="inline-multi" data-inline-multi-picker><summary aria-label="Edit ${esc(label)} for ${esc(row.id)}">${esc(value || "Select...")} <span aria-hidden="true">▾</span></summary><div class="inline-multi-menu" role="group" aria-label="${esc(label)} for ${esc(row.id)}">${[...new Set(f.options.map(canonicalAnswer))].map((choice) => `<label><input type="checkbox" data-inline-multi="${key}" data-row-id="${esc(row.id)}" data-column="${field}" value="${esc(choice)}" ${(row[field] || []).includes(choice) ? "checked" : ""}>${esc(choice)}</label>`).join("")}<button type="button" class="small quiet" data-inline-multi-done>Done</button></div></details>`;
+        if (inventoryClosedChoices(f))
+          return `<select class="answer-state ${answerStateClass(value)}" ${attr}>${inventoryChoiceOptions(f, value)}</select>`;
         const choices =
           field === "source" || field === "destination"
-            ? [
-                ...componentNames(state),
-                ...state.thirdParties.map((r) => r.name),
-                ...state.profiles.map((r) => r.name),
-              ]
-            : f?.options || [];
-        return `<input ${f?.options?.some((v) => answerStateClass(v)) ? `class="answer-state ${answerStateClass(value)}"` : ""} ${attr} value="${esc(value)}" placeholder="${esc(label)}" ${choices.length ? `list="inline-${key}-${row.id}-${field}"` : ""} maxlength="3000" autocomplete="off">${choices.length ? `<datalist id="inline-${key}-${row.id}-${field}">${[...new Set(choices.map(canonicalAnswer))].map((v) => `<option value="${esc(v)}">`).join("")}</datalist>` : ""}${key === "profiles" && field === "authentication" && knownBoolean(row.mfa) === "yes" ? '<small class="inline-mfa" title="Multi-factor authentication enabled">MFA ✓</small>' : ""}`;
+            ? [...componentNames(state), ...state.thirdParties.map((r) => r.name), ...state.profiles.map((r) => r.name)]
+            : field === "dataType" || (key === "thirdParties" && field === "data")
+              ? state.dataTypes.map((r) => r.name)
+              : f?.options || [];
+        return `<input ${attr} value="${esc(value)}" placeholder="${esc(label)}" ${choices.length ? `list="inline-${key}-${row.id}-${field}"` : ""} maxlength="3000" autocomplete="off">${choices.length ? `<datalist id="inline-${key}-${row.id}-${field}">${[...new Set(choices.map(canonicalAnswer))].map((v) => `<option value="${esc(v)}">`).join("")}</datalist>` : ""}${key === "profiles" && field === "authentication" && knownBoolean(row.mfa) === "yes" ? '<small class="inline-mfa" title="Multi-factor authentication enabled">MFA ✓</small>' : ""}`;
       }
       function controlGroup(id, title, sectionId, sources = []) {
         const section = sections.find((s) => s.id === sectionId),
@@ -19125,6 +19204,48 @@
         }
       });
 
+      document.addEventListener("change", (event) => {
+        const el = event.target;
+        if (!el.dataset.inlineMulti) return;
+        const key = el.dataset.inlineMulti;
+        const row = state[key].find((r) => r.id === el.dataset.rowId);
+        if (!row) return;
+        const field = el.dataset.column;
+        let values = new Set(row[field] || []);
+        if (el.checked) {
+          if (canonicalAnswer(el.value) === TBD) values = new Set([TBD]);
+          else { values.delete(TBD); values.add(canonicalAnswer(el.value)); }
+        } else values.delete(canonicalAnswer(el.value));
+        row[field] = [...values];
+        const picker = el.closest("[data-inline-multi-picker]");
+        for (const box of picker.querySelectorAll("[data-inline-multi]"))
+          box.checked = values.has(canonicalAnswer(box.value));
+        picker.querySelector("summary").innerHTML = `${esc(row[field].join(" + ") || "Select...")} <span aria-hidden="true">▾</span>`;
+        changed(false);
+        refreshQualificationProgress();
+        const status = [...document.querySelectorAll("[data-row-progress]")].find((n) => n.dataset.rowProgress === row.id);
+        if (status) status.textContent = inlineRowStatus(key, row);
+      });
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("[data-inline-multi-done]"))
+          event.target.closest("[data-inline-multi-picker]").open = false;
+        else if (!event.target.closest("[data-inline-multi-picker]"))
+          document.querySelectorAll("[data-inline-multi-picker][open]").forEach((d) => d.open = false);
+      });
+      document.addEventListener("focusout", (event) => {
+        const picker = event.target.closest?.("[data-inline-multi-picker]");
+        if (picker && !picker.contains(event.relatedTarget)) picker.open = false;
+      });
+      document.addEventListener("toggle", (event) => {
+        const picker = event.target;
+        if (!picker.matches?.("[data-inline-multi-picker]") || !picker.open) return;
+        const menu = picker.querySelector(".inline-multi-menu");
+        const bounds = picker.querySelector("summary").getBoundingClientRect();
+        const width = Math.min(260, Math.max(190, bounds.width));
+        menu.style.width = width + "px";
+        menu.style.left = Math.max(8, Math.min(bounds.left, innerWidth - width - 8)) + "px";
+        menu.style.top = Math.max(8, Math.min(bounds.bottom + 4, innerHeight - Math.min(menu.scrollHeight, 260) - 8)) + "px";
+      }, true);
       restoreLocal();
       clearFilters();
       populateIcons();
